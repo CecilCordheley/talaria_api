@@ -1,0 +1,21 @@
+import asyncService;
+request associateEntreprise{
+    $idService=required_get("idService");
+    $idEntreprise=required_get("Entreprise");
+    success(asyncService::associateEntreprise($idService,$idEntreprise));
+}
+request toogleService{
+    $id=required_get("idService");
+    success(asyncService::toogleService($id));
+}
+request updateService{
+    $id=required_get("idService");
+    success(asyncService::updateService($id));
+}
+request createService{
+    success(asyncService::createService());
+}
+request getServices{
+    $id=$_GET["idService"]??null;
+    success(asyncService::getService($id));
+}

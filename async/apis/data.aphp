@@ -1,0 +1,10 @@
+import asyncData;
+request TypeUser{
+    success(asyncData::getTypeUser());
+}
+request TypeTicket{
+    success(asyncData::getTypeTicket());
+}
+request EtatTicket{
+    success(asyncData::getStateTicket());
+}

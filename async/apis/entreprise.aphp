@@ -1,0 +1,18 @@
+import asyncEntreprise;
+request get{
+    $id=$_GET["siret"]??NULL;
+    success(asyncEntreprise::getEntreprise($id));
+}
+request create{
+    success(asyncEntreprise::addEntreprise());
+}
+request setData{
+    $siret=required_get("siret");
+    $key=required_get("key");
+    $value=required_get("value");
+    success(asyncEntreprise::setData($siret,$key,$value));
+}
+request update{
+    $id=required_get("siret");
+    success(asyncEntreprise::update($id));
+}

@@ -1,0 +1,33 @@
+import asyncUser;
+request getUser{
+    $id=$_GET["id"]??null;
+    success(asyncUser::getUser($id));
+}
+request associateService{
+    $user=required_get("idUser");
+    $service=required_get("idService");
+    success(asyncUser::associateService($user,$service));
+}
+request updateUser{
+    $id=required_get("idUser");
+    success(asyncUser::updateUser($id));
+}
+request updateData{
+    $id=required_get("idUser");
+    $key=required_get("key");
+    $value=required_get("value");
+    success(asyncUser::updateData($id,$key,$value));
+}
+request createAgent{
+    $type=required_get("type");
+    if(!in_array($type,['1','2','3','agent','manager']))
+        fail("not a valid type");
+    
+    success(asyncUser::createUser($type));
+}
+request connexion{
+    $mail=required_post("mail");
+    $mdp=required_post("secret");
+   $result= asyncUser::connexion($mail,$mdp);
+   success($result);
+}

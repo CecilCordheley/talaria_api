@@ -1,0 +1,4 @@
+<h3>Exportations</h3>
+<p>Vous pouvez exporter les données (utilisateurs et pannes)</p>
+<a href="export_user" class="btn btn-primary">exporter les utilisateurs</a>
+<a href="export_panne" class="btn btn-primary">exporter les pannes</a>

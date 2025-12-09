@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="mapper.js"></script>
+    <script src="talariaLib.js"></script>
+    <title>Test Requête Talaria</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Calibri;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .step span.done {
+            background-color: aqua;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="listService"></ul>
+    <div class="step">
+        <b id="token">Token</b>
+        <b id="Emeteur">Service emeteur</b>
+        <b id="Recepteur">Service recepteur</b>
+        <b id="Agent A">Agent du service E</b>
+        <b id="Manager A">Manager du service E</b>
+        <b id="Agent B">Agent du service R</b>
+        <b id="Manager B">Manager du service R</b>
+        <span>connexion de l'admin</span>
+        <span>Obtenir service Emeteur</span>
+        <span>Création des managers et agent du service E</span>
+        <span>Obtenir recepteur</span>
+        <span>Création des manager et agent du service R</span>
+        <span>Création d'un ticket par l'agent du service E</span>
+        <span>Validation du ticket par le manger du service E</span>
+        <span>Affection du ticket par le manager du service R</span>
+        <span>Traitement du ticket par l'agent du service R</span>
+    </div>
+
+    <script>
+        let token = "";
+        function step1() {
+            connexion("j.tenessee@exemple.com", "hiVbnKfi", (result) => {
+                console.dir(result);
+                token = result.token;
+                document.querySelectorAll(".step span")[0].classList.add("done");
+                document.components["token"].innerText = token;
+                getUser(result.user_id, result.token, (user) => {
+                    alert(`Bienvenue ${user.nomUser}`)
+                    //Get Service
+                    getService(token, null, (result) => {
+                        let listService = document.components["listService"];
+                        result.forEach(element => {
+                            listService.innerHTML += `<li>${element.nomService} / ${element.uuidService}</li>`;
+                            if (element.nomService == "Emeteur") {
+                                document.components["Emeteur"].innerText = element.uuidService
+                            }
+                            if (element.nomService == "Recepteur") {
+                                document.components["Recepteur"].innerText = element.uuidService
+                            }
+                        });
+
+                    }, (error) => {
+                        console.error(error);
+                    });
+                    // step2()
+                }, (error) => {
+                    alert(error);
+                })
+            }, (error) => { console.error(error) });
+        }
+        /**
+         *Créer le service emeteur 
+         */
+        function step2() {
+            //Get Token
+            createService(document.components["token"].innerText, { nom: "Emeteur", desc: "Service Emeteur pour un test", entreprise: 1 }, (service) => {
+                console.dir(service);
+                alert(`Service Emeteur créer id = ${service}`);
+                document.querySelectorAll(".step span")[1].classList.add("done");
+                document.getElementById("Emeteur").innerText = service;
+                step3();
+            }, (err) => {
+                alert(err);
+            });
+        }
+        /**
+         *Créer le service recepteur 
+         */
+        function step3() {
+            //Get Token
+            createService(document.components["token"].innerText, { nom: "Recepteur", desc: "Service Recepteur pour un test", entreprise: 1 }, (service) => {
+                console.dir(service);
+                alert(`Service Recepteur créer id = ${service}`);
+                document.querySelectorAll(".step span")[2].classList.add("done");
+                document.getElementById("Recepteur").innerText = service;
+            }, (err) => {
+                alert(err);
+            });
+        }
+        function step4() {
+            let data = {
+                nom: "NomManager1",
+                prenom: "PrenomManager1",
+                mail: "manage1@exemple.com",
+                mdp: "123456",
+                type: 4
+            }
+            let token = document.getElementById("token").innerText;
+            createUser(token, data, (result) => {
+
+            }, (error) => {
+                console.error(error);
+            });
+        }
+        step1();
+
+    </script>
+</body>
+
+</html>

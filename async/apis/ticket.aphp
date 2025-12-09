@@ -1,0 +1,22 @@
+import asyncTicket;
+request createTicket{
+    success(asyncTicket::createTicket());
+}
+request updateTicket{
+    $id=required_get("idTicket");
+    success(asyncTicket::updateTicket($id));
+}
+request filter{
+    $filter=required_post("filter");
+   // var_dump($filter);
+    success(asyncTicket::getTickets($filter));
+}
+request getAll{
+    success(asyncTicket::getTickets(null));
+}
+request changeState{
+    $idTicket=required_get("idTicket");
+    $newState=required_get("idState");
+    $comment=$_GET["comment"]??"";
+    success(asyncTicket::changeState($idTicket,$newState,$comment));
+}

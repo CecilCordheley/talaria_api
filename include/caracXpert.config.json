@@ -1,0 +1,11 @@
+{
+  "plan": "pro",
+  "max_users": 25,
+  "features": {
+    "stats": true,
+    "api_access": false,
+    "trigger": true,
+    "security_module": true
+  },
+  "license_key": "abcd-1234-xxxx-5678"
+}
