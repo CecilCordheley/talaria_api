@@ -20,7 +20,7 @@ request updateData{
 }
 request createAgent{
     $type=required_get("type");
-    if(!in_array($type,['1','2','3','agent','manager']))
+    if(!in_array($type,['1','2','3','4','agent','manager']))
         fail("not a valid type");
     
     success(asyncUser::createUser($type));

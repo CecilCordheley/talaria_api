@@ -19,6 +19,17 @@ class ServiceEntity extends Service
    public function getUsers(SQLFactory $sqlF){
     return UserEntity::getUserBy($sqlF,"service",$this->idService);
    }
+   public function getTicketFrom($sqlF){
+    $return=$sqlF->execQuery("SELECT idTicket FROM `ticket` t
+INNER JOIN `user` u on t.Auteur=u.idUser
+WHERE u.service_idService=".$this->idService);
+   $a=[];
+   foreach($return as $ticket){
+   $t=TicketEntity::getTicketBy($sqlF,"IdTicket",$ticket["idTicket"]);
+$a[]=$t;
+   }
+   return $a;
+  }
    /**
     * retourne tout les ticket destiné au service
     * @param \vendor\easyFrameWork\Core\Master\SQLFactory $sqlF

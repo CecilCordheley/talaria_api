@@ -53,7 +53,7 @@ if(isset($_GET["root"])){
     if($root!="views"){
      $transpiler->setAction($_GET["action"]);
     }else{
-        var_dump($_POST);
+       
         $view=$_GET["name"];
         $transpiler->setAction($view);
     }

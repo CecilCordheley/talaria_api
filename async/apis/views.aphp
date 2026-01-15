@@ -1,4 +1,12 @@
 import viewFnc;
+request agentActivity{
+    $v=viewFnc::callView("agentActivity");
+    success($v);
+}
+request managerActivity{
+    $v=viewFnc::callView("managerActivity");
+    success($v);
+}
 request getUsers{
     $v=viewFnc::getUsers();
     success($v);

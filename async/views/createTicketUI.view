@@ -1,0 +1,70 @@
+<div class="col-6">
+    <section id="userTicket">
+        <table id="userTicketTbl" class="table">
+            <thead>
+                <tr>
+                    <th>Objet</th>
+                    <th>Date</th>
+                    <th>Service destinataire</th>
+                    <th>Priorité</th>
+                    <th>Etat</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {LOOP:userTicket}
+                <tr>
+                    <td>{#objetTicket#}</td>
+                    <td>{#dateTicket#}</td>
+                    <td>{#serviceTicket#}</td>
+                    <td>{#prioriteTicket#}</td>
+                    <td>{#lastStatut#}</td>
+                    <td><a name="seeTicket" idTicket="{#idTicket#}" class="btn btn-primary" href="#">voir</a></td>
+                </tr>
+                {/LOOP}
+            </tbody>
+        </table>
+    </section>
+    <button data-bs-toggle="modal" data-bs-target="#newTicket" class="btn btn-success">Nouveau Ticket</button>
+</div>
+  <div id="seeTicket" class="panel col-4">
+    <h2>Voir le ticket</h2>
+    <div class="mb-3">
+      <span>date</span>
+      <span data-ticket="dateTicket"></span>
+    </div>
+    <div class="mb-3">
+      <span>Objet</span>
+      <span data-ticket="objetTicket" class="editable"></span>
+    </div>
+    <div class="mb-3">
+      <span>Service</span>
+      <span data-ticket="libService"></span>
+    </div>
+    <div class="mb-3">
+      <span>type</span>
+      <span data-ticket="libType"></span>
+    </div>
+    <div class="mb-3">
+      <h4>Données</h4>
+      <ul data-ticket="dataTicket">
+
+      </ul>
+      <div class="input-group">
+        <input type="text" id="data-name" aria-label="Nom" placeholder="Nom" class="form-control">
+        <input type="text" id="data-value" aria-label="value" placeholder="valeur" class="form-control">
+        <button class="btn btn-outline-secondary" id="addData" type="button">ajouter</button>
+      </div>
+    </div>
+    <div class="mb-3">
+      <span>Contenu</span>
+      <p data-ticket="contentTicket" class="editable"></p>
+    </div>
+    <div class="mb-3">
+      <h4>Etat du tickets</h4>
+      <ul data-ticket="states">
+
+      </ul>
+    </div>
+    <button class="btn btn-primary" name="updateTicket">Update</button>
+  </div>

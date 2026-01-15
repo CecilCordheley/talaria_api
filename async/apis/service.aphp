@@ -4,6 +4,10 @@ request associateEntreprise{
     $idEntreprise=required_get("Entreprise");
     success(asyncService::associateEntreprise($idService,$idEntreprise));
 }
+request getTicket{
+    $idService=required_get("idService");
+    success(asyncService::getTickets($idService));
+}
 request toogleService{
     $id=required_get("idService");
     success(asyncService::toogleService($id));

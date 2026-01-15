@@ -1,0 +1,32 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Calibri;
+}
+
+#MainView {
+    display: grid;
+    height: 100vh;
+    grid-template-areas: 'header header'
+        'menu main'
+        'footer footer';
+        grid-template-rows: 10% 80% 10%;
+     grid-template-columns: 20% 80%;
+}
+header{
+    grid-area: header;
+    border: 1px solid #000;
+}
+menu{
+    grid-area: menu;
+    border: 1px solid #000;
+}
+main{
+    grid-area: main;
+    border: 1px solid #000;
+}
+footer{
+    grid-area: footer;
+    border: 1px solid #000;
+}

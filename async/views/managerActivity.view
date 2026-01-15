@@ -1,0 +1,117 @@
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <caption>Ticket du Service</caption>
+            <table id="listTicket" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Agent</th>
+                        <th>Destinataire</th>
+                        <th>Etat</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal" id="updateTicket" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nouveau Ticket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="./updateTicket">
+                    <div class="mb-3">
+                        <label for="objetUpdateTicket" class="form-label">Objet</label>
+                        <input type="text" maxlength="25" name="objetUpdateTicket" class="form-control" id="objetUpdateTicket"
+                            placeholder="objet du ticket">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Service" class="form-label">Service</label>
+                        <select class="form-control" name="service" id="Service">
+                            <option value="NULL">Choisissez un service</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="TypeTicket" class="form-label">Catégorie</label>
+                        <select class="form-control" name="typeTicket" id="TypeTicket">
+                            <option value="NULL">Choisissez un type de ticket</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <h4>Données</h4>
+                        <ul id="dataTicket">
+
+                        </ul>
+                        <div class="input-group">
+                            <input type="text" id="data-name" aria-label="Nom" placeholder="Nom" class="form-control">
+                            <input type="text" id="data-value" aria-label="value" placeholder="valeur"
+                                class="form-control">
+                            <button class="btn btn-outline-secondary" id="addDataUpdateTicket"
+                                type="button">ajouter</button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contentUpdateTicket" class="form-label">Contenu : </label>
+                        <textarea name="contentUpdateTicket" class="form-control" id="contentUpdateTicket"></textarea>
+                    </div>
+                    <span class="result"></span>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="addTicket" class="btn btn-primary">Envoyer</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    setMapper();
+    /*Récupérer les ticket du service*/
+    getUser(JSON.parse(localStorage.getItem("user")).user_id, JSON.parse(localStorage.getItem("user")).token, (data) => {
+        GetTicketFrom(JSON.parse(localStorage.getItem("user")).token, data.service_idService, (data) => {
+            data.forEach(ticket => {
+                var row = document.components["listTicket"].insertRow(1);
+                var cellID = row.insertCell(0);
+                cellID.innerHTML = ticket.ticket.uuidTicket;
+                var cellDate = row.insertCell(1);
+                cellDate.innerHTML = ticket.ticket.dateTicket;
+                var cellUser = row.insertCell(2);
+                cellUser.innerHTML = ticket.ticket["Auteur"];
+                var cellDest = row.insertCell(3);
+                cellDest.innerHTML = ticket.ticket["service"];
+                var cellStateDate = row.insertCell(4);
+                cellStateDate.innerHTML = ticket.state["libEtatTicket"];
+                var cellSeeTicket = row.insertCell(5);
+                let btnSee = document.createElement("button");
+                btnSee.classList.add("btn");
+                btnSee.classList.add("btn-primary");
+                btnSee.setAttribute("data-bs-toggle","modal");
+                btnSee.setAttribute("data-bs-target","#updateTicket");
+                btnSee.innerHTML = "Voir";
+                btnSee?.addEventListener("click", function () {
+                    alert(`Voir le ticket ${ticket.ticket.uuidTicket}`);
+                    getTicket(JSON.parse(localStorage.getItem("user")).token,
+                        ticket.ticket.uuidTicket,
+                        (data) => {
+                            console.dir(data);
+                            document.components.objetUpdateTicket.value=data[0].objetTicket
+                            document.components.contentUpdateTicket.value=data[0].contentTicket
+                        }, (err) => {
+                            console.error(err);
+                        })
+                });
+                cellSeeTicket.appendChild(btnSee)
+            });
+        }, (err) => {
+            console.error(err);
+        })
+    }, (err) => {
+        console.error(err);
+    })
+</script>

@@ -23,6 +23,39 @@ abstract class asyncService{
     private static function getSQLFactory():SQLFactory{
         return new SQLFactory(null,"../include/config.ini");
     }
+    public static function getTickets($idService){
+         try{
+            $sqlF=self::getSQLFactory();
+            self::checkToken(['admin','manager','agent']);
+            //Récupérer les données en POST
+            $service=ServiceEntity::getServiceBy($sqlF,"idService",$idService);
+            if($service===false){
+                echo json_encode(["result"=>"error","message"=>"service $idService n'existe pas"]);
+                exit();
+            }
+      //      var_dump($service);
+           $return=$service->getTicketFrom($sqlF);
+        
+        if($return){
+           return array_reduce($return,function($c,$e) use (&$sqlF){
+            $t=$e->getArray();
+            $auteur=UserEntity::getUserBy($sqlF,"idUser",$e->Auteur);
+            $serv=ServiceEntity::getServiceBy($sqlF,"idService",$e->service);
+            $t["Auteur"]=$auteur->uuidUser;
+            $t["service"]=$serv->uuidService;
+            $state=$e->lastState($sqlF);
+            $c[]=["ticket"=>$t,"state"=>$state["etat_data"]->getArray()];
+            return $c;
+           },[]);
+        }else{
+            echo json_encode(["result"=>"error","message"=>"Une erreur s'est produite lors de l'exécution de la requête"]);
+            exit();
+        }
+        }catch(Exception $e){
+             echo json_encode(["result"=>"error","message"=>$e->getMessage()]);
+            exit();
+        }
+    }
     private static function checkToken($roles){
         $userData = MiddleAgent::checkTokenAndRole($roles);
              $user_required=UserEntity::getUserBy(self::getSQLFactory(),"uuidUser",$userData["user"]);

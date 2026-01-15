@@ -1,0 +1,211 @@
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <caption>Ticket du Service</caption>
+      <table id="listTicket" class="table">
+        <tr>
+          <th>ID</th>
+          <th>Date</th>
+          <th>Agent</th>
+          <th>Destinataire</th>
+          <th>Etat</th>
+        </tr>
+      </table>
+    </div>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTicket">
+  Nouveau Ticket
+</button>
+
+    </div>
+<div class="modal fade" id="ServiceTicketMdl" tabindex="-1" aria-labelledby="ServiceTicketMdl" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="ServiceTicketMdl">Tickets du service</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Reférence</th>
+              <th>Objet</th>
+              <th>Date</th>
+              <th>Service Destination</th>
+              <th>Priorité</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {LOOP:serviceTicketFrom}
+            <tr>
+              <td>{#RefTicket#}</td>
+              <td>{#objetTicket#}</td>
+              <td>{#dateTicket#}</td>
+              <td>{#serviceTicket#}</td>
+              <td>{#prioriteTicket#}</td>
+              <td>{#lastStatut#}</td>
+              <td>
+                <a data-bs-toggle="modal" data-bs-target="#manageTicket" name="manageTicket" idTicket="{#idTicket#}"
+                  class="btn btn-primary" href="#">voir</a>
+                {:IF {#agentResponsable#}={var:user.idAgent}}
+                <a data-bs-toggle="modal" data-bs-target="#manageTicket" name="handleTicket" idTicket="{#idTicket#}"
+                  class="btn btn-primary" href="#">Gérer</a>
+                {:/IF}
+              </td>
+            </tr>
+            {/LOOP}
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="addService" class="btn btn-primary" data-bs-dismiss="modal">Valider</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="modal fade" id="manageTicket" tabindex="-1" aria-labelledby="manageTicket" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+
+        <h1 class="modal-title fs-5" id="manageTicket">Gérer le ticket #<span manage-ticket="idTicket"></span></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <span>date</span>
+          <span manage-ticket="dateTicket"></span>
+        </div>
+        <div class="mb-3">
+          <span>Objet</span>
+          <span manage-ticket="objetTicket"></span>
+        </div>
+        <div class="mb-3">
+          <span>Contenu : </span>
+          <span manage-ticket="contentTicket"></span>
+        </div>
+        <div class="mb-3">
+          <h4>Données</h4>
+          <ul manage-ticket="dataTicket">
+          </ul>
+        </div>
+        <div class="mb-3">
+          <h4>Etat du tickets</h4>
+          <ul manage-ticket="states">
+
+          </ul>
+        </div>
+        <div class="mb-3" id="lastStateCompoment">
+          <label class="form-label" for="StateTicket">Etat final :</label>
+          <select class="form-control" name="lastState" id="StateTicket">
+            <option value="NULL">Choisissez un état</option>
+            <option value="4">Traité</option>
+            <option value="5">Echoué</option>
+          </select>
+          <textarea class="form-control" name="commentFail" id="commentFail"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="validState" class="btn btn-primary" data-bs-dismiss="modal">Valider</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="newTicket" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nouveau Ticket</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="./newTicket">
+          <div class="mb-3">
+            <label for="objetNewTicket" class="form-label">Objet</label>
+            <input type="text" maxlength="25" name="objetNewTicket" class="form-control" id="objetNewTicket"
+              placeholder="objet du ticket">
+          </div>
+          <div class="mb-3">
+            <label for="Service" class="form-label">Service</label>
+            <select class="form-control" name="service" id="Service">
+              <option value="NULL">Choisissez un service</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="TypeTicket" class="form-label">Catégorie</label>
+            <select class="form-control" name="typeTicket" id="TypeTicket">
+              <option value="NULL">Choisissez un type de ticket</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <h4>Données</h4>
+            <ul id="dataTicket">
+
+            </ul>
+            <div class="input-group">
+              <input type="text" id="data-name" aria-label="Nom" placeholder="Nom" class="form-control">
+              <input type="text" id="data-value" aria-label="value" placeholder="valeur" class="form-control">
+              <button class="btn btn-outline-secondary" id="addDataNewTicket" type="button">ajouter</button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="contentNewTicket" class="form-label">Contenu : </label>
+            <textarea name="contentNewTicket" class="form-control" id="contentNewTicket"></textarea>
+          </div>
+          <span class="result"></span>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" id="addTicket" class="btn btn-primary">Envoyer</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    setMapper();
+    /*Récupérer les ticket du service*/
+    getUser(JSON.parse(localStorage.getItem("user")).user_id,JSON.parse(localStorage.getItem("user")).token,(data)=>{
+      GetTicketFrom(JSON.parse(localStorage.getItem("user")).token,data.service_idService,(data)=>{
+        data.forEach(ticket => {
+          var row = document.components["listTicket"].insertRow(1);
+          var cellID = row.insertCell(0);
+          cellID.innerHTML=ticket.ticket.uuidTicket;
+          var cellDate = row.insertCell(1);
+          cellDate.innerHTML=ticket.ticket.dateTicket;
+          var cellUser = row.insertCell(2);
+          cellUser.innerHTML=ticket.ticket["Auteur"];
+          var cellDest = row.insertCell(3);
+          cellDest.innerHTML=ticket.ticket["service"];
+           var cellStateDate = row.insertCell(4);
+          cellStateDate.innerHTML=ticket.state["libEtatTicket"];
+        });
+      },(err)=>{
+        console.error(err);
+      })
+    },(err)=>{  
+      console.error(err);
+    })
+    document.getElementById("addTicket").addEventListener("click",function(){
+        let _data=JSON.parse(localStorage.getItem("user"));
+                let _token=_data.token;
+        let paramTicket={
+            "content":document.components.contentNewTicket.value,
+            "object":document.components["objetNewTicket"].value,
+            "priority":"normal",
+            "data":[],
+            "service":document.components["Service"].value,
+            "type":document.components["TypeTicket"].value
+        }
+        createTicket(_token,paramTicket,(data)=>{
+            alert(`Ticket créer sous l'identifiant : ${data}`)
+        },(err)=>{
+            console.error(err);
+        })
+    })
+</script>
