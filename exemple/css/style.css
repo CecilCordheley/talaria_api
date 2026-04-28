@@ -23,6 +23,13 @@ console{
     grid-area: console;
     background: #555;
 }
+[name="manageService"]>table thead,
+[name="manageService"]>table tbody{
+    display: inline-block;
+    width: 100%;
+    max-height: 350px;
+    overflow: auto;
+}
 menu{
     grid-area: menu;
     border: 1px solid #000;

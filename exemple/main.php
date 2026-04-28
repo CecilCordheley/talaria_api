@@ -47,17 +47,6 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 <script>
-    const paramsString = window.location.href;
-const searchParams = new URLSearchParams(paramsString.split("?")[1]);
-console.dir(searchParams);
-if(searchParams.has("act") && searchParams.get("act")==="newPassWord"){
-    console.log("new Pass Word")
-    loadView("../async/view_newPassWord",()=>{
-        alert('op')
-    },(err)=>{
-        console.error(err);
-    });
-}
     setMapper();
 
     document.components.disconectBtn.addEventListener("click", function() {
@@ -66,35 +55,18 @@ if(searchParams.has("act") && searchParams.get("act")==="newPassWord"){
              window.location.href="index.php";
         });
     });
-
     var token = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).token : "";
 
    
 
-    if (!token && !searchParams.has("act")) {
-    document.getElementById("connexionTrigger").addEventListener("click", function() {
-        const mdp = document.components["Mdp_Connexion"].value;
-        const mail = document.components["Mail_Connexion"].value;
-
-        connexion(mail, mdp, (data) => {
-            localStorage.setItem("user", JSON.stringify(data));
-            if(data.validity===0){
-                _alert("Vous devez renouveler votre mot de passe !",()=>{
-                     window.location.href="index.php?act=newPassWord";
-                });
-            }
-            handleRole(data.role);
-            token=data.token;
-            generateMenu(data.role, document.querySelector("menu"));
-            startTokenCheck(data.token);
-        }, (err) => {
-            document.querySelector(".result").innerText = "Une erreur s'est produite";
-            console.error(err);
-        });
-    });
+    if (!token) {
+    window.location.href="index.php";
 } else {
-    if(!searchParams.has("act"))
-    window.location.href="main.php";
+    const data = JSON.parse(localStorage.user);
+    token = data.token;
+    handleRole(data.role);
+    generateMenu(data.role, document.querySelector("menu"));
+    startTokenCheck(data.token);
 }
 
 function startTokenCheck(token) {

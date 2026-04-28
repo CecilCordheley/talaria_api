@@ -159,6 +159,9 @@ const handleRole = (role) => {
     };
 
     switch (role) {
+        case "dev":
+            loadActivityView("../async/view_devActivity");
+            break;
         case "admin":
             loadActivityView("../async/view_adminActivity");
             break;
@@ -171,6 +174,9 @@ const handleRole = (role) => {
 };
 function LoadMainView(token,role,user) {
     switch (role) {
+        case "dev":{
+            break;
+        }
         case "manager": {
             GetTicketFrom(token, user.service_idService, (data) => {
                 if (data.length > 0)

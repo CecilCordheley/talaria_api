@@ -11,25 +11,58 @@ function generateMenu(profile, container) {
         }
     })
     switch (profile) {
+        case "dev": {
+            links.push(...[
+                {
+                    "label": "main",
+                    "fnc": function () {
+                        alert("retour sur la vue principale");
+                        window.location.href = "main.php";
+                    }
+                }, {
+                    "label": "voir les log",
+                    "fnc": () => {
+                        logAccess()
+                    }
+                }, {
+                    "label": "Voir les statistiques",
+                    "fnc": () => {
+                        loadView("../async/view_statView", () => {
+                            console.log("stat");
+                        }, (err) => {
+                            console.error(err);
+                        })
+                    }
+                }
+            ])
+            break;
+        }
         case "manager": {
             links.push(...[{
                 "label": "Gérer les agents",
-                "fnc": function(){
-                    
+                "fnc": function () {
+
                 }
             }, {
                 "label": "Gerer les tickets",
-                "fnc":function(){ manageTicket();}
-            },{
-                "label":"main",
-                "fnc":function(){
+                "fnc": function () { manageTicket(); }
+            }, {
+                "label": "main",
+                "fnc": function () {
                     alert("retour sur la vue principale");
-                    window.location.href="index.php";
+                    window.location.href = "main.php";
                 }
             }]);
             break;
         }
         case "admin": {
+            links.push(...[{
+                "label": "main", fnc: function () {
+                    _alert("retour à la vue principale", () => {
+                        window.location.href = "main.php";
+                    })
+                }
+            }]);
             break;
         }
     }
@@ -45,6 +78,13 @@ function generateMenu(profile, container) {
                 return false;
             });
         container.appendChild(l);
+    })
+}
+function logAccess() {
+    loadView("../async/view_logView", () => {
+        console.log("log");
+    }, (err) => {
+        console.error(err);
     })
 }
 function manageTicket() {
