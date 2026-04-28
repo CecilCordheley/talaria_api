@@ -1,0 +1,606 @@
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h3>Connecté en tant que Manager</h3>
+        </div>
+        <div class="col-12">
+            <button name="seeSection" target="#ticketFrom" class="btn btn-primary">
+                voir les tickets du service
+            </button>
+            <button name="seeSection" target="#ticketTo" class="btn btn-primary">
+                voir les tickets pour le service
+            </button>
+            <button name="seeSection" target="#seeAgent" class="btn btn-primary">Voir les agents</button>
+        </div>
+        <section id="seeAgent" class="col-12">
+            <caption>Agent du service</caption>
+            <table id="listAgent" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>prenom</th>
+                        <th>Mail</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAgent">
+                + nouvel agent
+            </button>
+        </section>
+        <section id="ticketFrom" class="col-12">
+            <caption>Ticket du Service</caption>
+            <table id="listTicket" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Agent</th>
+                        <th>Service destinataire</th>
+                        <th>Etat</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+        <section id="ticketTo" class="col-12">
+            <caption>Ticket pour le Service</caption>
+            <table id="tblTicketTo" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Agent</th>
+                        <th>Service origine</th>
+                        <th>agents</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+            </table>
+        </section>
+    </div>
+</div>
+<div class="modal" id="updateAgent" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agent <span data-agent="uuidAgent"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="nomuser">Nom de l'agent</label>
+                        <input data-agent="nomUser" class="form-control" id="Updatenomuser" type="text" name="nomUser">
+                    </div>
+                    <div class="mb-3">
+                        <label for="prenomuser">Prénom de l'agent</label>
+                        <input data-agent="prenomUser" class="form-control" id="Updateprenomuser" type="text"
+                            name="prenomUser">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mailuser">Mail de l'agent</label>
+                        <input data-agent="mailUser" class="form-control" id="Updatemailuser" type="text"
+                            name="mailUser">
+                    </div>
+                    <div class="mb-3">
+                        <label for="validiteMdp">validité du mot de passe</label>
+                        <input readonly="readonly" data-agent="validiteMdp" class="form-control" id="UpdatvaliditeMdp"
+                            type="text" name="validiteMdp">
+                    </div>
+                    <div class="mb-3">
+                        <h4>Données</h4>
+                        <ul id="dataAgent_update">
+                        </ul>
+                        <div class="input-group">
+                            <input type="text" id="dataAgent-name_update" aria-label="Nom" placeholder="Nom"
+                                class="form-control">
+                            <input type="text" id="dataAgent-value_update" aria-label="value" placeholder="valeur"
+                                class="form-control">
+                            <button class="btn btn-outline-secondary" id="addDataAgent_update"
+                                type="button">ajouter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-secondary" id="changeValidDate">Changer le statut</button>
+                <button type="button" id="UpdateAgentBtn" class="btn btn-success">Modifier</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="newAgent" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nouvel Agent</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="nomuser">Nom de l'agent</label>
+                        <input class="form-control" id="nomuser" type="text" name="nomUser">
+                    </div>
+                    <div class="mb-3">
+                        <label for="prenomuser">Prénom de l'agent</label>
+                        <input class="form-control" id="prenomuser" type="text" name="prenomUser">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mailuser">Mail de l'agent</label>
+                        <input class="form-control" id="mailuser" type="text" name="mailUser">
+                    </div>
+                    <div class="mb-3">
+                        <h4>Données</h4>
+                        <ul id="dataAgent">
+                        </ul>
+                        <div class="input-group">
+                            <input type="text" id="dataAgent-name" aria-label="Nom" placeholder="Nom"
+                                class="form-control">
+                            <input type="text" id="dataAgent-value" aria-label="value" placeholder="valeur"
+                                class="form-control">
+                            <button class="btn btn-outline-secondary" id="addDataAgent_new"
+                                type="button">ajouter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="AddAgentBtn" class="btn btn-success">Valider</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="updateTicket" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Valider le Ticket <span name="idTicket"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="./updateTicket">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="objetUpdateTicket" class="form-label">Objet</label>
+                                <input type="text" maxlength="25" name="objetUpdateTicket" class="form-control"
+                                    id="objetUpdateTicket" placeholder="objet du ticket" manage-ticket="objetTicket">
+                            </div>
+                            <div class="mb-3">
+                                <label for="dateUpdateTicket" class="form-label">Date</label>
+                                <input disabled="disabled" type="text" maxlength="25" name="dateUpdateTicket"
+                                    class="form-control" id="dateUpdateTicket" placeholder="objet du ticket"
+                                    manage-ticket="dateTicket">
+                            </div>
+                            <div class="mb-3">
+                                <label for="AuteurUpdateTicket" class="form-label">Auteur</label>
+                                <input disabled="disabled" type="text" maxlength="25" name="AuteurUpdateTicket"
+                                    class="form-control" id="AuteurUpdateTicket" placeholder="objet du ticket"
+                                    manage-ticket="Auteur">
+                            </div>
+                            <div class="mb-3">
+                                <label for="priorityUpdateTicket" class="form-label">Priorité : </label>
+                                <select manage-ticket="prioriteTicket" name="" id="priorityUpdateTicket">
+                                    <option value="basse">Basse</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="haute">Haute</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="Service" class="form-label">Service</label>
+                                <select manage-ticket="Service" class="form-control" name="service" id="Service">
+                                    <option value="NULL">Choisissez un service</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="TypeTicket" class="form-label">Catégorie</label>
+                                <select manage-ticket="TypeTicket" class="form-control" name="typeTicket"
+                                    id="TypeTicket">
+                                    <option value="NULL">Choisissez un type de ticket</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <h4>Données</h4>
+                                <ul id="dataTicket">
+                                </ul>
+                                <div class="input-group">
+                                    <input type="text" id="data-name" aria-label="Nom" placeholder="Nom"
+                                        class="form-control">
+                                    <input type="text" id="data-value" aria-label="value" placeholder="valeur"
+                                        class="form-control">
+                                    <button class="btn btn-outline-secondary" id="addDataUpdateTicket"
+                                        type="button">ajouter</button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="contentUpdateTicket" class="form-label">Contenu : </label>
+                                <textarea manage-ticket="contentTicket" name="contentUpdateTicket" class="form-control"
+                                    id="contentUpdateTicket"></textarea>
+                            </div>
+                            <span class="result"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="UpdateTicket" class="btn btn-primary">Enregistrer</button>
+                <button type="button" id="ValidTicket" class="btn btn-success">Valider</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var serviceUser = [];
+    var mainService = null;
+    var oldDate = null;
+    setMapper();
+    function resetSection() {
+        document.querySelectorAll("section").forEach(el => {
+            el.style.display = "none";
+        })
+    }
+    function getLastDay() {
+        const now = new Date();
+        const lastDay = new Date(now);
+        lastDay.setDate(now.getDate() - 1);
+        const format = lastDay.toISOString().split('T')[0];
+        return format;
+    }
+    resetSection();
+    document.querySelectorAll("[name=seeSection]").forEach(el => {
+        el.addEventListener("click", function () {
+            resetSection();
+            let target = this.getAttribute("target");
+            if (target == "#seeAgent") {
+                let tbody = document.components["listAgent"].tBodies[0];
+                // Nettoyer le tableau
+                tbody.innerHTML = "";
+                serviceUser.forEach(agent => {
+                    // console.log(agent);
+                    var row = tbody.insertRow();
+                    let fields = ["uuidUser", "nomUser", "prenomUser", "mailUser"];
+                    fields.forEach((f, i) => {
+                        let cell = row.insertCell(i);
+                        cell.innerText = agent[f];
+                    });
+                    let cellAction = row.insertCell(4);
+                    let btnSee = document.createElement("button");
+                    btnSee.classList.add("btn");
+                    btnSee.setAttribute("data-bs-toggle", "modal");
+                    btnSee.setAttribute("data-bs-target", "#updateAgent");
+                    btnSee.innerText = "Voir l'agent";
+                    btnSee.addEventListener("click", () => {
+                        let fields = document.querySelectorAll("[data-agent]");
+                        document.querySelector("[data-agent=uuidAgent]").innerText = agent.uuidUser;
+                        getUser(agent.uuidUser, token, (data) => {
+                            fields.forEach(f => {
+                                let dataName = f.getAttribute("data-agent");
+                                f.value = data[dataName];
+                            });
+                            let dataAgent = JSON.parse(data.dataAgent);
+                            document.components.dataAgent_update.innerHTML = "";
+                            Object.entries(dataAgent).forEach(el => {
+                                let li = document.createElement("li");
+                                let sname = document.createElement("span");
+                                sname.addEventListener("click", function () {
+                                    let i = document.createElement("input");
+                                    i.value = this.innerText;
+                                    i.addEventListener("blur", function () {
+                                        let s = document.createElement("span");
+                                        s.innerText = this.value;
+                                        this.replaceWith(s);
+                                    })
+                                    this.replaceWith(i);
+                                })
+                                sname.innerText = el[0];
+                                li.appendChild(sname);
+                                let svalue = document.createElement("span");
+                                svalue.addEventListener("click", function () {
+                                    let i = document.createElement("input");
+                                    i.value = this.innerText;
+                                    i.addEventListener("blur", function () {
+                                        let s = document.createElement("span");
+                                        s.innerText = this.value;
+                                        this.replaceWith(s);
+                                    })
+                                    this.replaceWith(i);
+                                })
+                                svalue.innerText = el[1];
+                                li.appendChild(svalue);
+                                //  li.innerHTML += `<span>${el[1]}</span>`;
+                                document.components.dataAgent_update.appendChild(li);
+                            });
+                        }, (err) => {
+                            document.console.innerText = err;
+                        })
+                    });
+                    cellAction.appendChild(btnSee);
+                })
+            }
+            document.querySelector(target).style.display = "block";
+            return false;
+        })
+    })
+    document.components.AddAgentBtn.addEventListener("click", function () {
+        let datas = {};
+        document.querySelectorAll("#dataAgent li").forEach(element => {
+            //  console.log(element.querySelectorAll("span")[0].innerText, element.querySelectorAll("span")[1].innerText)
+            datas[element.querySelectorAll("span")[0].innerText] = element.querySelectorAll("span")[1].innerText;
+        });
+        let paramAgent = {
+            "nom": document.components.nomuser.value,
+            "prenom": document.components["prenomuser"].value,
+            "mail": document.components["mailuser"].value,
+            "mdp": "123456",
+            "data": datas,
+            "type": 2
+        }
+        createUser(token, paramAgent, (data) => {
+            let uuid = data;
+            updateDataUser(token, uuid, { data: JSON.stringify(datas) }, (_data) => {
+                associateUserService(token, uuid, mainService, (dataUpdate) => {
+                    _alert("Utilisateur créé avec le mot de passe par défaut <b>123456</b>")
+                }, (err) => {
+                    document.console.innerHTML = err;
+                })
+            }, (err) => {
+                document.console.innerText = err;
+            })
+
+        }, (err) => {
+            document.console.innerHTML = err;
+        })
+    });
+    document.components.addDataAgent_new.addEventListener("click", function () {
+        let dataName = document.components["dataAgent-name"];
+        let dataValue = document.components["dataAgent-value"];
+        if (dataName.value == "" && dataValue.value == "") {
+            return;
+        }
+        let compoment = document.components["dataAgent"];
+        let statEl = document.createElement("li");
+        statEl.innerHTML = `<span>${dataName.value}</span><span>${dataValue.value}</span>`;
+        compoment.appendChild(statEl);
+        dataName.value = "";
+        dataValue.value = "";
+        formatDataSpan(compoment)
+    });
+    document.components.addDataAgent_update.addEventListener("click", function () {
+        let dataName = document.components["dataAgent-name_update"];
+        let dataValue = document.components["dataAgent-value_update"];
+        if (dataName.value == "" && dataValue.value == "") {
+            return;
+        }
+        let compoment = document.components["dataAgent_update"];
+        let statEl = document.createElement("li");
+        statEl.innerHTML = `<span>${dataName.value}</span><span>${dataValue.value}</span>`;
+        compoment.appendChild(statEl);
+        dataName.value = "";
+        dataValue.value = "";
+        formatDataSpan(compoment)
+    });
+    document.components.UpdateTicket.addEventListener("click", function () {
+        let datas = {};
+        document.querySelectorAll("#dataTicket li").forEach(element => {
+            //  console.log(element.querySelectorAll("span")[0].innerText, element.querySelectorAll("span")[1].innerText)
+            datas[element.querySelectorAll("span")[0].innerText] = element.querySelectorAll("span")[1].innerText;
+        });
+        let paramTicket = {
+            "content": document.components.contentUpdateTicket.value,
+            "object": document.components["objetUpdateTicket"].value,
+            "priority": document.components["priorityUpdateTicket"].value,
+            "data": datas,
+            "service": document.components["Service"].value,
+            "type": document.components["TypeTicket"].value
+        }
+        updateTicket(token, document.querySelector("[name=idTicket]").innerText, paramTicket, (data) => {
+            alert("mise à jour ticket");
+            document.console.innerText = `ticket ${document.querySelector("[name=idTicket]").innerText} mis à jour`
+        }, (err) => {
+            document.console.innerText = "Update Ticket\n" + err;
+        })
+    });
+    document.components.addDataUpdateTicket.addEventListener("click", function () {
+        let dataName = document.components["data-name"];
+        let dataValue = document.components["data-value"];
+        if (dataName.value == "" && dataValue.value == "") {
+            return;
+        }
+        let compoment = document.components["dataTicket"];
+        let statEl = document.createElement("li");
+        statEl.innerHTML = `<span>${dataName.value}</span><span>${dataValue.value}</span>`;
+        compoment.appendChild(statEl);
+        dataName.value = "";
+        dataValue.value = "";
+    });
+    document.components.ValidTicket.addEventListener("click", function () {
+        let idTicket = document.querySelector("[name=idTicket]").innerText;
+        changeStatut(token, idTicket, "VALI-D83EF", "Validé par " + JSON.parse(localStorage.getItem("user")).user_id, (data) => {
+        }, (err) => {
+            console.error(err);
+            document.console.innerText += "Valide tiket\n" + err;
+        })
+    })
+    document.components.UpdateAgentBtn.addEventListener("click", () => {
+
+        const datas = {};
+
+        document.querySelectorAll("#dataAgent_update li").forEach(li => {
+            const spans = li.querySelectorAll("span");
+            if (spans.length >= 2) {
+                const key = spans[0].textContent.trim();
+                const value = spans[1].textContent.trim();
+                datas[key] = value;
+            }
+        });
+
+        const paramAgent = {
+            nom: document.components.Updatenomuser.value.trim(),
+            prenom: document.components.Updateprenomuser.value.trim(),
+            mail: document.components.Updatemailuser.value.trim(),
+            data: datas
+        };
+
+        const uuid = document.querySelector("[data-agent='uuidAgent']").textContent.trim();
+
+        updateUser(token, uuid, paramAgent,
+            () => {
+                $('#updateAgent').modal('hide');
+                _alert("Les données de l'agent on été mise à jour ");
+            },
+            (err) => {
+                document.console.textContent = err;
+            }
+        );
+    });
+    document.components.changeValidDate.addEventListener("click", function () {
+        const uuid = document.querySelector("[data-agent='uuidAgent']").textContent.trim();
+        let validDate = document.components.UpdatvaliditeMdp;
+        if (validDate.value != getLastDay()) {
+            oldDate = validDate.value;
+            validDate.value = getLastDay();
+        }
+        else
+            validDate.value = oldDate;
+
+
+    })
+    /*Récupérer les tickets et les utilisateur du service*/
+    getUser(JSON.parse(localStorage.getItem("user")).user_id, JSON.parse(localStorage.getItem("user")).token, (data) => {
+        let t = JSON.parse(localStorage.getItem("user")).token;
+        getUserFromService(t, data.service_idService, (users) => {
+            serviceUser = users.user;
+            mainService = users.service;
+        }, (err) => {
+            console.error(err);
+            document.console.innerText += "get User\n" + err;
+        })
+        LoadMainView(t,"manager",data)
+        // console.dir(data);
+        /*
+        GetTicketFrom(t, data.service_idService, (data) => {
+            if (data.length > 0)
+                data.forEach(ticket => {
+
+                    var row = document.components["listTicket"].insertRow(1);
+                    updateListTicket(row, ticket)
+                    var cellSeeTicket = row.insertCell(5);
+                    let btnSee = document.createElement("button");
+                    btnSee.classList.add("btn");
+                    btnSee.classList.add("btn-primary");
+                    btnSee.setAttribute("data-bs-toggle", "modal");
+                    btnSee.setAttribute("data-bs-target", "#updateTicket");
+                    btnSee.innerHTML = "Voir";
+                    btnSee?.addEventListener("click", function () {
+                        getTicket(JSON.parse(localStorage.getItem("user")).token,
+                            ticket.ticket.uuidTicket,
+                            (data) => {
+                                console.dir(data);
+                                document.querySelector("[name=idTicket]").innerText = data[0].uuidTicket;
+                                setTicket(document.forms[0], data)
+                                let dataTickets = JSON.parse(data[0].dataticket);
+                                document.components.dataTicket.innerHTML = "";
+                                Object.entries(dataTickets).forEach(el => {
+                                    let li = document.createElement("li");
+                                    let sname = document.createElement("span");
+                                    sname.addEventListener("click", function () {
+                                        let i = document.createElement("input");
+                                        i.value = this.innerText;
+                                        i.addEventListener("blur", function () {
+                                            let s = document.createElement("span");
+                                            s.innerText = this.value;
+                                            this.replaceWith(s);
+                                        })
+                                        this.replaceWith(i);
+                                    })
+                                    sname.innerText = el[0];
+                                    li.appendChild(sname);
+                                    let svalue = document.createElement("span");
+                                    svalue.addEventListener("click", function () {
+                                        let i = document.createElement("input");
+                                        i.value = this.innerText;
+                                        i.addEventListener("blur", function () {
+                                            let s = document.createElement("span");
+                                            s.innerText = this.value;
+                                            this.replaceWith(s);
+                                        })
+                                        this.replaceWith(i);
+                                    })
+                                    svalue.innerText = el[1];
+                                    li.appendChild(svalue);
+                                    //  li.innerHTML += `<span>${el[1]}</span>`;
+                                    document.components.dataTicket.appendChild(li);
+                                });
+                            }, (err) => {
+                                console.error(err);
+                            })
+                    });
+                    cellSeeTicket.appendChild(btnSee)
+                });
+        }, (err) => {
+            console.error(err);
+            if (err === "Invalid token") {
+                document.console.innerText = "Votre token n'est plus valide";
+                localStorage.removeItem("user");
+                navigator.reload();
+            }
+        })
+        getTicketTo(t, data.service_idService, (data) => {
+            console.log("tiket_to",data);
+            data.forEach(ticket => {
+                if (ticket.state.idEtatTicket == 2) {
+                    var row = document.components["tblTicketTo"].insertRow(1);
+                    row.id = "TicketToTable";
+                    updateListTicket(row, ticket)
+                    var cellAgent = row.insertCell(4);
+                    let selectUser = document.createElement("select");
+                    serviceUser.forEach(u => {
+                        console.log(u.uuidUser)
+                        if (u.uuiUser != JSON.parse(localStorage.getItem("user")).user_id) {
+                            let opt = document.createElement("option");
+                            opt.value = u.uuidUser;
+                            opt.innerHTML = u.nomUser + " " + u.prenomUser;
+                            selectUser.appendChild(opt);
+                        }
+                    });
+                    cellAgent.appendChild(selectUser);
+                    var cellBtnValid = row.insertCell(5);
+                    var btnValid = document.createElement("button");
+                    btnValid.addEventListener("click", function () {
+                        alert(`Ticket ${ticket.ticket.uuidTicket} assign to ${selectUser.value}`);
+                        AssignTicket(token, ticket.ticket.uuidTicket, selectUser.value, (data) => {
+                            changeStatut(token, ticket.ticket.uuidTicket, "PEND-8IO36", "Assigné par " + JSON.parse(localStorage.getItem("user")).user_id + " à " + selectUser.value, (data) => {
+                                alert("Ticket assigné !");
+                            }, (err) => {
+                                document.console.innerText += err;
+                                console.error(err);
+                            })
+                        }, (err) => {
+                            document.console.innerText += err;
+                            console.error(err);
+                        })
+                    });
+                    btnValid.classList.add("btn");
+                    btnValid.classList.add("btn-success");
+                    btnValid.textContent = "Valider";
+                    cellBtnValid.appendChild(btnValid);
+                }
+            });
+        }, (err) => {
+            document.console.innerText += err;
+            console.error(err);
+        })*/
+    }, (err) => {
+        document.console.innerText += err;
+        console.error(err);
+    })
+</script>

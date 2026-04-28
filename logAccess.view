@@ -1,0 +1,133 @@
+<style>
+    .log {
+        height: 350px;
+        overflow: auto;
+    }
+
+    .log>div {
+        border-bottom: 1px solid;
+        padding: 2px;
+    }
+</style>
+<div class="row">
+    <div class="col-6">
+        <h2>Log de connexion</h2>
+        <div class="log" id="connexion"></div>
+        <button class="btn btn-primary" id="exportLog">Exporter</button>
+        <button class="btn btn-primary" id="cleanLog">Nettoyer</button>
+        <select id="EnterpriseFilter">
+            <option value="NULL">Séléctionner une entreprise</option>
+        </select>
+    </div>
+    <div class="col-6">
+        <h2>Tokens</h2>
+        <div class="log" id="tokens"></div>
+        <button class="btn btn-primary" id="exportLog">Exporter</button>
+        <button class="btn btn-primary" id="cleanToken">Nettoyer</button>
+    </div>
+</div>
+<script>
+    setMapper();
+    token = JSON.parse(localStorage.user).token;
+    getEntreprise(token, null, (data) => {
+        data.forEach(entr => {
+            let opt = document.createElement("option");
+            opt.value = entr.idEntreprise
+            opt.innerText = entr.nomEntreprise
+            document.components.EnterpriseFilter.appendChild(opt);
+        })
+    }, (err) => {
+        document.console.innerText = err;
+    })
+    let filter = null;
+    document.components.EnterpriseFilter.addEventListener("change", function () {
+        filter = this.value;
+        loadFile("../include/connexion.log",
+            document.components.connexion,
+            (data, container) => {
+                data.forEach(line => {
+                    if (filter != null) {
+                        let uuid = line.message.split("- ")[0];
+                        console.log(uuid);
+                        getUserFromEntreprise(token, filter, (data) => {
+                            if (data.users.filter(u => { u.uuidUser == uuid })) {
+                                let l = document.createElement("div");
+                                l.innerText = line.date + " - " + line.message;
+                                container.appendChild(l);
+                            }
+                        }, (err) => {
+                            console.error(err);
+                        })
+                    }
+
+                });
+            });
+
+    })
+    function loadFile(file, container, handle) {
+        container.innerHTML = "";
+        fetch(file)
+            .then(result => { return result.json() })
+            .then(r => {
+                handle(r, container);
+            }).catch(err => {
+                console.error(err);
+            })
+    }
+    loadFile("../include/connexion.log",
+        document.components.connexion,
+        (data, container) => {
+            data.forEach(line => {
+                let l = document.createElement("div");
+                l.innerText = line.date + " - " + line.message;
+                container.appendChild(l);
+            });
+        });
+    loadFile("../include/tokens/tokens.json",
+        document.components.tokens, (data, container) => {
+            Object.entries(data).forEach(t => {
+                console.dir(t);
+                let l = document.createElement("div");
+                l.innerText = t[1].user + " - " + t[1].data.role + " - " + t[1].expire.date;
+                container.appendChild(l);
+            });
+        });
+    document.components.cleanLog.addEventListener("click", function () {
+        alert("Le fichier de log va être purgé");
+        cleanFile(token, "connexion.log", (data) => {
+            if (data === "connexion.log clean") {
+                loadFile("../include/connexion.log",
+                    document.components.connexion,
+                    (data, container) => {
+                        data.forEach(line => {
+                            let l = document.createElement("div");
+                            l.innerText = line.date + " - " + line.message;
+                            container.appendChild(l);
+                        });
+                    });
+            }
+        }, (err) => {
+            console.error(err);
+        });
+
+    });
+    document.components.cleanToken.addEventListener("click", function () {
+        alert("Le fichier de token va être purgé");
+        cleanFile(token, "tokens/tokens.json", (data) => {
+            if (data === "connexion.log clean") {
+                loadFile("../include/tokens/tokens.json",
+                    document.components.tokens, (data, container) => {
+                        Object.entries(data).forEach(t => {
+                            console.dir(t);
+                            let l = document.createElement("div");
+                            l.innerText = t[1].user + " - " + t[1].data.role + " - " + t[1].expire.date;
+                            container.appendChild(l);
+                        });
+                    });
+            }
+        }, (err) => {
+            console.error(err);
+        });
+
+    });
+</script>
