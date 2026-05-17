@@ -43,9 +43,10 @@ function updateListTicket(row, ticket) {
             cellDest.innerHTML = data.uuidService;
         })
     }
+    console.log("last state",ticket.state.last()["state"]);
     if (row.id == "") {
         var cellStateDate = row.insertCell(4);
-        cellStateDate.innerHTML = ticket.state["libEtatTicket"];
+        cellStateDate.innerHTML = ticket.state.last()["state"]["libEtatTicket"];
     }
 
 }
@@ -79,10 +80,11 @@ function formatDataSpan(list) {
         })
     })
 }
+
 function setTicket(form, data) {
-    console.log("format ticket to form")
+    console.log("format ticket form")
     for (let d in data[0]) {
-        console.log(d);
+        //  console.log(d);
         let c = document.querySelector(`[manage-ticket='${d}']`);
         if (c != undefined)
             c.value = data[0][d];
@@ -123,8 +125,69 @@ async function loadView(view, onload, onFailed) {
         onFailed?.(err);
     }
 }
+async function displayModalTicket(ticket, action = "see", labels = { "service": "UpdateService", "categorie": "TypeTicket",data:"dataTicket" }) {
+   console.log("Tiket",ticket);
+    loadServiceAndCategorie(document.components[labels.service], document.components[labels.categorie]);
+    getTicket(token,
+        ticket.uuidTicket,
+        (data) => {
+            if (action === "see") {
+                if (document.components.ValidTicket)
+                    document.components.ValidTicket.disabled = true;
+                if (document.components.RejectTicket)
+                    document.components.RejectTicket.disabled = true;
+                if (document.components.UpdateTicket)
+                    document.components.UpdateTicket.disabled = true;
+            }
+            if (document.components.ValidTicket)
+                document.components.ValidTicket.removeAttribute("disable");
+            //  console.dir(data);
+            document.querySelector("[manage-ticket=uuidTicket]").innerText = data[0].uuidTicket;
+            setTicket(document.forms[0], data)
+            let s = data[0].states[data[0].states.length - 1];
+            data[0].states.forEach(state=>{
+                let li = document.createElement("li");
+                li.innerHTML=`<span>${state.EtatTicket}</span><span>${state.dateEtatTicket}</span><span>${state.comment}</span>`;
+                document.components[labels.states].appendChild(li);
+            });
+            if (s.refEtatTicket === "REJE-K1E32") {
+                //Disable le bouton de validation 
+                if (document.components.ValidTicket)
+                    document.components.ValidTicket.setAttribute("disable", "disable");
+            }
+            let dataTickets = JSON.parse(data[0].dataticket);
+            document.components[labels.data].innerHTML = "";
+            Object.entries(dataTickets).forEach(el => {
+                let li = document.createElement("li");
+                let sname = createEditableSpan(el[0]);
+                let svalue = createEditableSpan(el[1]);
+
+                li.appendChild(sname);
+                li.appendChild(svalue);
+                //  li.innerHTML += `<span>${el[1]}</span>`;
+                document.components[labels.data].appendChild(li);
+            });
+        }, (err) => {
+            console.error(err);
+            document.console.innerText = err;
+        })
+
+}
 //Fonctionn liées aux vues
-const handleRole = (role) => {
+async function handleRole(role) {
+    getUser(JSON.parse(localStorage.user).user_id, token, (user_data) => {
+        c_user = user_data;
+        mainService = user_data.service_idService;
+        getService(token, mainService, (data) => {
+            document.components.nomService.innerText = data.nomService;
+        }, (err) => {
+            document.console.innerText = err;
+        })
+        entreprise = user_data.Entreprise[0].idEntreprise;
+        document.components.nomEntreprise.innerText = user_data.Entreprise[0].nomEntreprise;
+    }, (err) => {
+        document.console.innerText = err;
+    });
     const loadActivityView = (viewPath, handleActity) => {
         loadView(viewPath, () => {
             if (handleActity)
@@ -137,15 +200,22 @@ const handleRole = (role) => {
     const loadTypeAndService = () => {
         getTypeTicket(token, (data) => {
             data.forEach(el => {
-                document.components["TypeTicket"].innerHTML += `<option value=${el.refTypeTicket}>${el.libTypeTicket}</option>`;
+                if (document.components["TypeTicket"])
+                    document.components["TypeTicket"].innerHTML += `<option value=${el.refTypeTicket}>${el.libTypeTicket}</option>`;
             });
         }, (err) => {
             console.error(err);
         });
 
         getService(token, null, (data) => {
+            if (data.length == 0) {
+                if (document.components["Service"])
+                    document.components["Service"].innerHTML = "<option value=''>Aucun service disponible</option>";
+                return;
+            }
             data.forEach(el => {
-                document.components["Service"].innerHTML += `<option value=${el.uuidService}>${el.nomService}</option>`;
+                if (document.components["Service"])
+                    document.components["Service"].innerHTML += `<option value=${el.uuidService}>${el.nomService}</option>`;
             });
         }, (err) => {
             console.error(err);
@@ -168,17 +238,19 @@ const handleRole = (role) => {
         case "agent":
         case "manager":
             loadActivityView(role === "agent" ? "../async/view_agentActivity" : "../async/view_managerActivity");
-            loadTypeAndService();
+            
             break;
     }
 };
-function LoadMainView(token,role,user) {
+function LoadMainView(token, role, user) {
+
     switch (role) {
-        case "dev":{
+        case "dev": {
             break;
         }
         case "manager": {
-            GetTicketFrom(token, user.service_idService, (data) => {
+            getTicketFrom(token, user.service_idService, (data) => {
+                document.components["listTicket"].innerHTML="<tr></tr>";
                 if (data.length > 0)
                     data.forEach(ticket => {
 
@@ -192,41 +264,33 @@ function LoadMainView(token,role,user) {
                         btnSee.setAttribute("data-bs-target", "#updateTicket");
                         btnSee.innerHTML = "Voir";
                         btnSee?.addEventListener("click", function () {
+                            document.components.ValidTicket.disabled = false;
+                            document.components.RejectTicket.disabled = false;
+                            document.querySelector('.commentSection').innerHTML = "";
                             getTicket(JSON.parse(localStorage.getItem("user")).token,
                                 ticket.ticket.uuidTicket,
                                 (data) => {
-                                    console.dir(data);
+
                                     document.querySelector("[name=idTicket]").innerText = data[0].uuidTicket;
-                                    setTicket(document.forms[0], data)
+                                    setTicket(document.forms[0], data);
+                                    let s = data[0].states[data[0].states.length - 1];
+                                    console.log(s);
+                                    if (s.EtatTicket === 4) {
+                                        //Disable le bouton de validation 
+                                        document.components.ValidTicket.disabled = true;
+                                        document.components.RejectTicket.disabled = true;
+                                        document.querySelector('.commentSection').innerHTML = s.comment
+                                    } else {
+                                        document.components.RejectTicket.disabled = true;
+                                    }
                                     let dataTickets = JSON.parse(data[0].dataticket);
                                     document.components.dataTicket.innerHTML = "";
                                     Object.entries(dataTickets).forEach(el => {
                                         let li = document.createElement("li");
-                                        let sname = document.createElement("span");
-                                        sname.addEventListener("click", function () {
-                                            let i = document.createElement("input");
-                                            i.value = this.innerText;
-                                            i.addEventListener("blur", function () {
-                                                let s = document.createElement("span");
-                                                s.innerText = this.value;
-                                                this.replaceWith(s);
-                                            })
-                                            this.replaceWith(i);
-                                        })
-                                        sname.innerText = el[0];
+                                        let sname = createEditableSpan(el[0]);
+                                        let svalue = createEditableSpan(el[1]);
+
                                         li.appendChild(sname);
-                                        let svalue = document.createElement("span");
-                                        svalue.addEventListener("click", function () {
-                                            let i = document.createElement("input");
-                                            i.value = this.innerText;
-                                            i.addEventListener("blur", function () {
-                                                let s = document.createElement("span");
-                                                s.innerText = this.value;
-                                                this.replaceWith(s);
-                                            })
-                                            this.replaceWith(i);
-                                        })
-                                        svalue.innerText = el[1];
                                         li.appendChild(svalue);
                                         //  li.innerHTML += `<span>${el[1]}</span>`;
                                         document.components.dataTicket.appendChild(li);
@@ -265,25 +329,25 @@ function LoadMainView(token,role,user) {
                         });
                         cellAgent.appendChild(selectUser);
                         var cellBtnValid = row.insertCell(5);
-                        var btnValid = document.createElement("button");
-                        btnValid.addEventListener("click", function () {
-                            alert(`Ticket ${ticket.ticket.uuidTicket} assign to ${selectUser.value}`);
-                            AssignTicket(token, ticket.ticket.uuidTicket, selectUser.value, (data) => {
-                                changeStatut(token, ticket.ticket.uuidTicket, "PEND-8IO36", "Assigné par " + JSON.parse(localStorage.getItem("user")).user_id + " à " + selectUser.value, (data) => {
-                                    alert("Ticket assigné !");
-                                }, (err) => {
-                                    document.console.innerText += err;
-                                    console.error(err);
-                                })
-                            }, (err) => {
-                                document.console.innerText += err;
-                                console.error(err);
-                            })
-                        });
-                        btnValid.classList.add("btn");
-                        btnValid.classList.add("btn-success");
-                        btnValid.textContent = "Valider";
-                        cellBtnValid.appendChild(btnValid);
+                        /* var btnValid = document.createElement("button");
+                         btnValid.addEventListener("click", function () {
+                             alert(`Ticket ${ticket.ticket.uuidTicket} assign to ${selectUser.value}`);
+                             AssignTicket(token, ticket.ticket.uuidTicket, selectUser.value, (data) => {
+                                 changeStatut(token, ticket.ticket.uuidTicket, "PEND-8IO36", "Assigné par " + JSON.parse(localStorage.getItem("user")).user_id + " à " + selectUser.value, (data) => {
+                                     alert("Ticket assigné !");
+                                 }, (err) => {
+                                     document.console.innerText += err;
+                                     console.error(err);
+                                 })
+                             }, (err) => {
+                                 document.console.innerText += err;
+                                 console.error(err);
+                             })
+                         });
+                         btnValid.classList.add("btn");
+                         btnValid.classList.add("btn-success");
+                         btnValid.textContent = "Valider";
+                         cellBtnValid.appendChild(btnValid);*/
                     }
                 });
             }, (err) => {

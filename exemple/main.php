@@ -7,17 +7,22 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="../public/mapper.js"></script>
     <script src="../public/talariaLib.js"></script>
+    <script src="js/IHM_talaria.js"></script>
     <script src="js/main.js"></script>
+    
     <script src="js/menu.js"></script>
     <title>Exemple Talaria V2</title>
 </head>
 <body>
     <div class="container" id="MainView">
         <header>
-            <h1>Model d'application Talaria</h1>
+            <h1>Model d'application Talaria <span id="nomEntreprise">NOM DE L'ENTREPRISE</span></h1>
+            
         </header>
         <menu class="list-group">
+            <span id="nomService">NOM DU SERVICE</span>
             <a href="#" id="disconectBtn" class="list-group-item list-group-item-action">Déconnexion</a>
+            
         </menu>
         <main id="MainActivity">
             <div class="row">
@@ -46,9 +51,11 @@
         </footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
 <script>
     setMapper();
-
+    var c_user=null;
+    var mainService=null;
     document.components.disconectBtn.addEventListener("click", function() {
         localStorage.removeItem("user");
         _alert("Vous êtes déconnecté", () => {
@@ -64,10 +71,31 @@
 } else {
     const data = JSON.parse(localStorage.user);
     token = data.token;
-    handleRole(data.role);
+    handleRole(data.role,async ()=>{
+                await loadUser();
+            });
     generateMenu(data.role, document.querySelector("menu"));
     startTokenCheck(data.token);
 }
+//Vérifie le contenu de la console pour voir si le token est encore valide, si une erreur est détectée, le token est supprimé et l'utilisateur est redirigé vers la page de connexion
+document.console.innerText = "Vérification du token en cours...";
+//Si document.console change, cela signifie que le token est encore valide, sinon une erreur est survenue et le token a été supprimé
+let observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.type === "childList") {
+            console.log("Token check: " + document.console.innerText);
+            if(document.console.innerText.includes("Invalid token") || document.console.innerText.includes("Token is invalid") || document.console.innerText.includes("Token has expired")){
+            localStorage.removeItem("user");    
+            window.location.href="index.php";
+            }
+        }
+    });
+});
+observer.observe(document.console, { childList: true });
+document.console.addEventListener("change", function() {
+    console.log("Token check: " + document.console.innerText);
+});
+
 
 function startTokenCheck(token) {
     const intervalCheck = setInterval(() => {

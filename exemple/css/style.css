@@ -4,7 +4,16 @@
     box-sizing: border-box;
     font-family: Calibri;
 }
-
+.data-list{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.data-list li{
+    list-style: none;
+    display: flex;
+    gap: 10px;
+}
 #MainView {
     display: grid;
     height: 100vh;
@@ -12,12 +21,15 @@
         'menu main'
         'console main'
         'footer footer';
-        grid-template-rows: 10% 70% 10% 10%;
+        grid-gap: 2px;
+        grid-template-rows: 9% 70% 9% 10%;
      grid-template-columns: 20% 80%;
 }
 header{
     grid-area: header;
     border: 1px solid #000;
+    border-radius: 3px;
+    padding: 6px;
 }
 console{
     grid-area: console;
@@ -41,6 +53,8 @@ main{
 footer{
     grid-area: footer;
     border: 1px solid #000;
+    border-radius: 3px;
+    padding: 12px;
 }
 #dataTicket {
     display: flex;
@@ -72,4 +86,64 @@ footer{
     background: #FFF;
     color: #000;
     font-size: var(--dSize);
+}
+/*KPI*/
+#KPI_By_State li{
+    display: flex;
+}
+#KPI_By_State li span:first-of-type::after{
+    content:"->";
+}
+/*TimeLine*/
+.timeline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    font-family: Arial;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ccc;
+    margin: 5px;
+}
+
+.circle.done {
+    background: #4CAF50;
+}
+
+.circle.current {
+    background: orange;
+}
+
+.label {
+    font-size: 12px;
+    text-align: center;
+}
+
+.connector {
+    height: 2px;
+    width: 80px;
+    background: #ccc;
+    margin: 0 5px;
+    position: relative;
+}
+
+.connector.done {
+    background: #4CAF50;
+}
+
+.duration {
+    position: absolute;
+    top: -20px;
+    font-size: 11px;
 }

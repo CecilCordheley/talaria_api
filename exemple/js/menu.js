@@ -1,4 +1,5 @@
 function generateMenu(profile, container) {
+    console.log(profile);
     let links = [];
     links.push({
         "label": "voir le compte",
@@ -10,7 +11,22 @@ function generateMenu(profile, container) {
             });
         }
     })
-    switch (profile) {
+    switch (profile.toLowerCase()) {
+        case "agent": {
+            links.push(...[
+                {
+                    "label": "main",
+                    "fnc": function () {
+                        alert("retour sur la vue principale");
+                        window.location.href = "main.php";
+                    }
+                }, {
+                    "label": "Rechercher les tickets",
+                    "fnc": function () { searchTicket(); }
+                }
+            ]);
+            break;
+        }
         case "dev": {
             links.push(...[
                 {
@@ -47,6 +63,11 @@ function generateMenu(profile, container) {
                 "label": "Gerer les tickets",
                 "fnc": function () { manageTicket(); }
             }, {
+                "label": "kpi",
+                "fnc": function () {
+                    KPI_access("manager");
+                }
+            }, {
                 "label": "main",
                 "fnc": function () {
                     alert("retour sur la vue principale");
@@ -61,6 +82,11 @@ function generateMenu(profile, container) {
                     _alert("retour à la vue principale", () => {
                         window.location.href = "main.php";
                     })
+                }
+            }, {
+                "label": "KPI",
+                "fnc": function () {
+                    KPI_access("admin");
                 }
             }]);
             break;
@@ -80,12 +106,37 @@ function generateMenu(profile, container) {
         container.appendChild(l);
     })
 }
+function KPI_access(role) {
+    loadView("../async/view_KPI", () => {
+        KPI.role=role;
+        switch (role) {
+            case "manager":{
+                _alert("Vous avez accès au ticket émis par votre service");
+                break;
+            }
+            case "admin": {
+                _alert("En tant qu'admin vous avez accès à tout les tickets de tout les service");
+                break;
+            }
+        }
+    }, (err) => {
+        console.error(err);
+    });
+}
 function logAccess() {
     loadView("../async/view_logView", () => {
         console.log("log");
     }, (err) => {
         console.error(err);
     })
+}
+function searchTicket() {
+    alert("rechercher les tickets !");
+    loadView("../async/view_searchTicket", () => {
+        console.log("search");
+    }, (err) => {
+        console.error(err);
+    });
 }
 function manageTicket() {
     alert("Gerer les ticket !");

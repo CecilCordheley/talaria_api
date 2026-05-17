@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,110 +11,116 @@
     <script src="js/main.js"></script>
     <script src="js/menu.js"></script>
     <title>Exemple Talaria V2</title>
+    <style>
+        /*Only index.php*/
+        #MainView {
+            grid-template-areas: 'header'
+                'main'
+                'footer';
+            grid-template-rows: 10% 80% 10%;
+            grid-template-columns: 100%;
+        }
+        #MainActivity{
+            border-radius: 3px;
+        }
+    </style>
 </head>
+
 <body>
     <div class="container" id="MainView">
         <header>
             <h1>Model d'application Talaria</h1>
         </header>
-        <menu class="list-group">
-            <a href="#" id="disconectBtn" class="list-group-item list-group-item-action">Déconnexion</a>
-        </menu>
-        <main id="MainActivity">
+        <main id="MainActivity" style="margin: 3% auto; width: 800px; height:80%">
             <div class="row">
                 <div class="col-6 offset-2">
-                     <h2>Votre groupe est déjà inscit</h2>
+                    <h2>Veuillez vous connecter</h2>
                     <div class="mb-3">
                         <label for="Mail_Connexion" class="form-label">Mail</label>
                         <input type="mail" id="Mail_Connexion" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label for="Mdp_Connexion" class="form-label">Mot de passe</label>
-                    <input type="password" id="Mdp_Connexion" class="form-control">
-                </div>
-                <button class="btn btn-primary" id="connexionTrigger">Connexion</button>
-                <a href="./firstConnexion" class="btn btn-primary" >Première connexion</a>
-                <a href="./newClient">Inscrire mon entreprise</a>
-                <div class="mb-3 result">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Mdp_Connexion" class="form-label">Mot de passe</label>
+                        <input type="password" id="Mdp_Connexion" class="form-control">
+                    </div>
+                    <button class="btn btn-primary" id="connexionTrigger">Connexion</button>
+                    <a href="./firstConnexion" class="btn btn-primary">Première connexion</a>
+                    <div class="mb-3 result">
 
+                    </div>
                 </div>
             </div>
-        </div>
         </main>
-        <console></console>
         <footer>
             copyright @CecilCordheley 2026
         </footer>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-<script>
-    const paramsString = window.location.href;
-const searchParams = new URLSearchParams(paramsString.split("?")[1]);
-console.dir(searchParams);
-if(searchParams.has("act") && searchParams.get("act")==="newPassWord"){
-    console.log("new Pass Word")
-    loadView("../async/view_newPassWord",()=>{
-        alert('op')
-    },(err)=>{
-        console.error(err);
-    });
-}
-    setMapper();
-
-    document.components.disconectBtn.addEventListener("click", function() {
-        localStorage.removeItem("user");
-        _alert("Vous êtes déconnecté", () => {
-             window.location.href="index.php";
-        });
-    });
-
-    var token = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).token : "";
-
-   
-
-    if (!token && !searchParams.has("act")) {
-    document.getElementById("connexionTrigger").addEventListener("click", function() {
-        const mdp = document.components["Mdp_Connexion"].value;
-        const mail = document.components["Mail_Connexion"].value;
-
-        connexion(mail, mdp, (data) => {
-            localStorage.setItem("user", JSON.stringify(data));
-            if(data.validity===0){
-                _alert("Vous devez renouveler votre mot de passe !",()=>{
-                     window.location.href="index.php?act=newPassWord";
-                });
-            }
-            handleRole(data.role);
-            token=data.token;
-            generateMenu(data.role, document.querySelector("menu"));
-            startTokenCheck(data.token);
-        }, (err) => {
-            document.querySelector(".result").innerText = "Une erreur s'est produite";
-            console.error(err);
-        });
-    });
-} else {
-    if(!searchParams.has("act"))
-    window.location.href="main.php";
-}
-
-function startTokenCheck(token) {
-    const intervalCheck = setInterval(() => {
-        checkToken(token, () => {
-            document.console.innerText = "token still valid";
-        }, (err) => {
-            clearInterval(intervalCheck);
-            _alert(err, () => {
-                token = "";
-                
-                localStorage.removeItem("user");
-                alert("Le token n'est plus valide. La page va se recharger.");
-                location.reload();
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <script>
+        const paramsString = window.location.href;
+        const searchParams = new URLSearchParams(paramsString.split("?")[1]);
+        console.dir(searchParams);
+        if (searchParams.has("act") && searchParams.get("act") === "newPassWord") {
+            console.log("new Pass Word")
+            loadView("../async/view_newPassWord", () => {
+                alert('op')
+            }, (err) => {
+                console.error(err);
             });
-        });
-    }, (60 * 1000) * 5);
-}
+        }
+        setMapper();
+        var token = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).token : "";
+
+
+
+        if (!token && !searchParams.has("act")) {
+            document.getElementById("connexionTrigger").addEventListener("click", function () {
+                const mdp = document.components["Mdp_Connexion"].value;
+                const mail = document.components["Mail_Connexion"].value;
+
+                connexion(mail, mdp, (data) => {
+                    localStorage.setItem("user", JSON.stringify(data));
+                    if (data.validity === 0) {
+                        _alert("Vous devez renouveler votre mot de passe !", () => {
+                            window.location.href = "index.php?act=newPassWord";
+                        });
+                    }
+                    window.location.href = "main.php";
+                    handleRole(data.role);
+                    token = data.token;
+                    generateMenu(data.role, document.querySelector("menu"));
+
+                    startTokenCheck(data.token);
+                }, (err) => {
+                    document.querySelector(".result").innerText = "Une erreur s'est produite";
+                    console.error(err);
+                });
+            });
+        } else {
+            if (!searchParams.has("act"))
+                window.location.href = "main.php";
+        }
+
+        function startTokenCheck(token) {
+            const intervalCheck = setInterval(() => {
+                checkToken(token, () => {
+                    document.console.innerText = "token still valid";
+                }, (err) => {
+                    clearInterval(intervalCheck);
+                    _alert(err, () => {
+                        token = "";
+
+                        localStorage.removeItem("user");
+                        alert("Le token n'est plus valide. La page va se recharger.");
+                        location.reload();
+                    });
+                });
+            }, (60 * 1000) * 5);
+        }
 
     </script>
 </body>
+
 </html>
