@@ -11,7 +11,9 @@ use Exception;
 class ChangeetatEntity extends Changeetat
 {
    // Ajoutez vos méthodes ici
-
+public function getState($sqlF){
+    return EtatTicketEntity::getEtatticketBy($sqlF,"idEtatTicket",$this->EtatTicket);
+   }
    public static function getAll($sqlF){
     $arr=Changeetat::getAll($sqlF);
     if($arr){
@@ -33,7 +35,7 @@ class ChangeetatEntity extends Changeetat
         $c[]=Main::fixObject($e,"SQLEntities\ChangeetatEntity");
         return $c;
       },[]);
-    }else return $arr;
+    }else return Main::fixObject($arr,"SQLEntities\ChangeetatEntity");
     }else{
       return false;
     }

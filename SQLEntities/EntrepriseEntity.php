@@ -10,6 +10,19 @@ use Exception;
 */
 class EntrepriseEntity extends Entreprise
 {
+  public function getUsers(SQLFactory $sqlF){
+    //get user from user_entreprise
+    $user_e=UserEntrepriseEntity::getUserEntrepriseBy($sqlF,"entreprise_idEntreprise",$this->idEntreprise);
+    if(is_array($user_e))
+    return array_reduce($user_e,function($c,$i) use ($sqlF){
+      $u=UserEntity::getUserBy($sqlF,"idUser",$i->user_idUser);
+      $c[]=$u;
+      return $c;
+    },[]);
+    else
+      return UserEntity::getUserBy($sqlF,"idUser",$user_e->user_idUser);
+     
+  }
    /**
     * Retourne tout les services de l'entreprise
     * @param mixed $sqlF

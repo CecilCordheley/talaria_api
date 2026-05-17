@@ -12,6 +12,7 @@ class EtatticketEntity extends Etatticket
 {
    // Ajoutez vos méthodes ici
 
+   
    public static function getAll($sqlF){
     $arr=Etatticket::getAll($sqlF);
     if($arr){

@@ -63,6 +63,9 @@ $entity->Entreprise=$element["Entreprise"];
 $entity->uuidService=$element["uuidService"];
       $return[]=$entity;
       }
+      if(count($return)==0){
+        return false;
+      }
      return (count($return)>1)?$return:$return[0];
     }
     public static function getServiceBy($sqlF,$key,$value,$filter=null){

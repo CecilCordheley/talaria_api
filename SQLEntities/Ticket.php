@@ -3,7 +3,7 @@ namespace SQLEntities;
 use vendor\easyFrameWork\Core\Master\SQLFactory;
 use Exception;
  class Ticket{
-    private $attr=["idTicket"=>'',"uuidTicket"=>'',"contentTicket"=>'',"dateTicket"=>'',"objetTicket"=>'',"prioriteTicket"=>'',"dataticket"=>'',"responsable"=>'',"Auteur"=>'',"service"=>'',"typeTicket"=>''];
+    private $attr=["idTicket"=>'',"uuidTicket"=>'',"contentTicket"=>'',"dateTicket"=>'',"objetTicket"=>'',"prioriteTicket"=>'',"dataticket"=>'',"responsable"=>'',"Auteur"=>'',"service"=>'',"typeTicket"=>'',"entreprise_source"=>'',"entreprise_cible"=>''];
     public function __set($name,$value){
       if (array_key_exists($name, $this->attr)) {
          $this->attr[$name]=$value;
@@ -65,6 +65,8 @@ $entity->responsable=$element["responsable"];
 $entity->Auteur=$element["Auteur"];
 $entity->service=$element["service"];
 $entity->typeTicket=$element["typeTicket"];
+$entity->entreprise_source=$element["entreprise_source"];
+$entity->entreprise_cible=$element["entreprise_cible"];
       $return[]=$entity;
       }
      return (count($return)>1)?$return:$return[0];
@@ -85,6 +87,8 @@ $entity->responsable=$element["responsable"];
 $entity->Auteur=$element["Auteur"];
 $entity->service=$element["service"];
 $entity->typeTicket=$element["typeTicket"];
+$entity->entreprise_source=$element["entreprise_source"];
+$entity->entreprise_cible=$element["entreprise_cible"];
       $return[]=$entity;
       }
       if($filter!=null && count($return)>0){
