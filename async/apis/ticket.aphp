@@ -2,6 +2,18 @@ import asyncTicket;
 request createTicket{
     success(asyncTicket::createTicket());
 }
+request getKPIByState{
+    success(asyncTicket::getKPIByState());
+}
+request getKPIByService{
+    success(asyncTicket::getKPIByService());
+}
+request assignAgent{
+    $user=required_get("user");
+    $ticket=required_get("ticket");
+    $comment=$_GET["comment"]??"";
+    success(asyncTicket::assignAgent($ticket,$user,$comment));
+}
 request updateTicket{
     $id=required_get("idTicket");
     success(asyncTicket::updateTicket($id));

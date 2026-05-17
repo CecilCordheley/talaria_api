@@ -1,0 +1,368 @@
+<div class="container">
+    <div class="row">
+        <h2>Les KPI</h2>
+        <div class="col-12 adminOnly">
+            <button type="button" class="btn btn-primary" 
+            data-bs-toggle="modal" data-bs-target="#KPI_Global">
+                Voir les KPI par états
+            </button>
+
+        </div>
+        <div class="col-12">
+            <table class="table" id="KPI_Recipes">
+                <thead>
+                    <tr>
+                        <th title="UUID du ticket">UUID</th>
+                        <th>Auteur</th>
+                        <th>Service destination</th>
+                        <th class="adminOnly">Entreprise Cible</th>
+                        <th class="adminOnly">Entreprise Sources</th>
+                        <th>Etat Actuel</th>
+                        <th>Durée</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-12 row">
+            <h4>Détails</h4>
+            <div class="col-6">
+                <div id="stat_details"></div>
+                <div class="timeline" id="timeline"></div>
+            </div>
+            <div class="col-6" id="infoTicket"></div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<div class="modal fade" id="KPI_Global" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">KPI par état</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body row">
+                <ul class="col-6" id="KPI_By_State"></ul>
+                <ul class="col-6" id="KPI_By_Service"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var KPI = {}//Variable de la page KPI
+    var serviceUser = [];
+    var entreprise = null;
+    var oldDate = null;
+
+    setMapper();
+    KPI.role = JSON.parse(localStorage.user).role;
+    function formatDuration(ms) {
+        let min = Math.floor(ms / 60000);
+        let h = Math.floor(min / 60);
+        let m = min % 60;
+
+        if (h > 24) {
+            let d = Math.floor(h / 24);
+            h = h % 24;
+            return `${d}j ${h}h ${m}m`;
+        }
+
+        return `${h}h ${m}m`;
+    }
+
+    function renderTimeline(states, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        // 🔥 trier
+        states.sort((a, b) =>
+            new Date(a.dateEtatTicket) - new Date(b.dateEtatTicket)
+        );
+
+        for (let i = 0; i < states.length; i++) {
+            let current = states[i];
+            let next = states[i + 1];
+
+            let step = document.createElement("div");
+            step.className = "step";
+
+            let circle = document.createElement("div");
+            circle.className = "circle";
+
+            // état final ou en cours
+            if (current.state.is_final) {
+                circle.classList.add("done");
+            } else if (i === states.length - 1) {
+                circle.classList.add("current");
+            } else {
+                circle.classList.add("done");
+            }
+
+            let label = document.createElement("div");
+            label.className = "label";
+            label.innerText = current.state.libEtatTicket;
+
+            step.appendChild(circle);
+            step.appendChild(label);
+            container.appendChild(step);
+
+            // connector + durée
+            if (next) {
+                let connector = document.createElement("div");
+                connector.className = "connector";
+
+                let start = new Date(current.dateEtatTicket.replace(" ", "T"));
+                let end = new Date(next.dateEtatTicket.replace(" ", "T"));
+
+                // 🔥 si dernier état non final → maintenant
+                if (!next.state.is_final && i + 1 === states.length - 1) {
+                    end = new Date();
+                }
+
+                let duration = document.createElement("div");
+                duration.className = "duration";
+                duration.innerText = formatDuration(end - start);
+
+                connector.appendChild(duration);
+
+                if (current.state.is_final) {
+                    connector.classList.add("done");
+                }
+
+                container.appendChild(connector);
+            }
+        }
+    }
+    function computeSteps(states) {
+        let steps = [];
+
+        for (let i = 0; i < states.length - 1; i++) {
+            let current = states[i];
+            let next = states[i + 1];
+
+            let start = new Date(current.dateEtatTicket.replace(" ", "T"));
+            let end = new Date(next.dateEtatTicket.replace(" ", "T"));
+
+            let diffMs = end - start;
+
+            let diffMin = Math.floor(diffMs / 60000);
+            let h = Math.floor(diffMin / 60);
+            let m = diffMin % 60;
+
+            steps.push({
+                from: current.state.libEtatTicket,
+                to: next.state.libEtatTicket,
+                duration: `${h}h ${m}min`
+            });
+        }
+
+        return steps;
+    }
+    if (KPI.role === "admin") {
+        //KPI By State
+        getKPIByState(token, (data) => {
+            let KPI_list = document.components.KPI_By_State;
+            KPI_list.innerHTML = "";
+            data.forEach(l => {
+                let duration = formatDuration(l.avg_minutes * 3600);
+                let li = document.createElement("li");
+                li.innerHTML = `<span>${l.from_state}</span><span>${l.to_state}</span><span>${duration}</span>`;
+                KPI_list.appendChild(li);
+            })
+        }, (err) => {
+            console.error(err);
+        })
+        //KPI par service
+        getKPIByService(token,(data)=>{
+            let list=document.components.KPI_By_Service;
+            list.innerHTML="";
+            data.forEach(l=>{
+                let li=document.createElement("li");
+                li.innerHTML=`${l.service} total : ${l.total}`;
+                let byState=document.createElement("ul");
+                for(var s in l.states){
+                    let li_st=document.createElement("li");
+                    li_st.innerHTML=`${s} : ${l.states[s]}`;
+                    byState.appendChild(li_st);
+                }
+                li.appendChild(byState);
+                list.appendChild(li);
+            });
+        },(err)=>{
+
+        })
+        getTickets(token, null, (data) => {
+
+            let states = data.map(d => d.state);
+            let t = document.components.KPI_Recipes.tBodies[0];
+            data.forEach((ticket, i) => {
+                let row = fillHTMLTableRow(t, ticket, ["uuidTicket", "Auteur", "Service", "entreprise_cible", "entreprise_source"]);
+                //Remplacer les uuid des service par leur nom
+                getService(token, null, (data) => {
+                    console.dir(data);
+                    data.forEach(e => {
+                        if (e.uuidService === ticket.Service) {
+                            row.childNodes[2].innerText = e.nomService;
+                            row.childNodes[2].setAttribute("uuidService", e.uuidService);
+                        }
+                    })
+                }, (err) => {
+                    console.error(err);
+                })
+                //Remplacer les row entreprise_cible et entreprise source par les nom des entreprise
+
+                getEntreprise(token, undefined, (data) => {
+                    data.forEach(e => {
+                        if (e.idEntreprise === ticket.entreprise_source) {
+                            row.childNodes[4].innerText = e.nomEntreprise;
+                            row.childNodes[4].setAttribute("idEntreprise", e.idEntreprise);
+                        }
+                        if (e.idEntreprise === ticket.entreprise_cible) {
+                            row.childNodes[3].innerText = e.nomEntreprise;
+                            row.childNodes[3].setAttribute("idEntreprise", e.idEntreprise);
+                        }
+                    })
+                }, (err) => {
+                    console.error(err);
+                });
+                let stateCell = row.insertCell(5);
+                let timeCell = row.insertCell(6);
+                let ticketStates = ticket.states;
+
+                if (!ticketStates || ticketStates.length === 0) {
+                    stateCell.innerText = "No state";
+                    return;
+                }
+
+                let first = ticketStates[0];
+                let last = ticketStates[ticketStates.length - 1];
+
+                let start = new Date(first.dateEtatTicket.replace(" ", "T"));
+                let end = new Date(last.dateEtatTicket.replace(" ", "T"));
+                const ACTIVE_STATES = ["PEND-8IO36", "VALI-D83EF", "CREA-G73FF"];
+
+                if (ACTIVE_STATES.includes(last.state.refEtatTicket)) {
+                    end = new Date();
+                }
+
+
+                let diffMs = end - start;
+
+                let diffMin = Math.floor(diffMs / 60000);
+                let diffHours = Math.floor(diffMin / 60);
+                let remainingMin = diffMin % 60;
+
+                stateCell.innerText = `${last.state.libEtatTicket}`;
+                timeCell.innerText = ` (${diffHours}h ${remainingMin}min)`
+                let btnSee = generateBtn("voir", ["btn-primary"]);
+                btnSee.addEventListener("click", () => {
+                    let steps = computeSteps(ticketStates);
+                    document.components.stat_details.innerHTML = `${ticket.uuidTicket} créé le <b>${ticket.dateTicket}</b>`;
+                    document.components.infoTicket.innerHTML = `<span>Objet : ${ticket.objetTicket}</span> <p>${ticket.contentTicket}</p>`;
+                    document.components.infoTicket.innerHTML += `<span>Responable ${ticket.responsable}</span>`
+                    let list = document.createElement("ul");
+                    steps.forEach(s => {
+                        let li = document.createElement("li");
+                        li.innerText = `${s.from} → ${s.to} : ${s.duration}`;
+                        list.appendChild(li);
+                    })
+                    document.components.stat_details.appendChild(list);
+                    console.log("states", ticketStates);
+                    if (ticketStates.length > 1)
+                        renderTimeline(ticketStates, "timeline");
+                })
+                actionCell = row.insertCell(7);
+                actionCell.appendChild(btnSee);
+            });
+
+
+        }, (err) => {
+            console.error(err);
+        })
+    } else {
+        //Enlevé les composant "adminOnly"
+        document.querySelectorAll(".adminOnly").forEach(e => {
+            e.style.display = "none";
+        })
+        //Remplir le tableau
+        getTicketFrom(token, mainService, (data) => {
+            console.dir(data);
+            let m = data.map(d => d.ticket);
+            let states = data.map(d => d.state);
+            let t = document.components.KPI_Recipes.tBodies[0];
+            m.forEach((ticket, i) => {
+                let row = fillHTMLTableRow(t, ticket, ["uuidTicket", "Auteur", "service"]);
+                getService(token, null, (data) => {
+                    console.dir(data);
+                    data.forEach(e => {
+                        if (e.uuidService === ticket.service) {
+                            row.childNodes[2].innerText = e.nomService;
+                            row.childNodes[2].setAttribute("uuidService", e.uuidService);
+                        }
+                    })
+                }, (err) => {
+                    console.error(err);
+                })
+                let stateCell = row.insertCell(3);
+                let timeCell = row.insertCell(4);
+                let ticketStates = states[i];
+
+                if (!ticketStates || ticketStates.length === 0) {
+                    stateCell.innerText = "No state";
+                    return;
+                }
+
+                let first = ticketStates[0];
+                let last = ticketStates[ticketStates.length - 1];
+
+                let start = new Date(first.dateEtatTicket.replace(" ", "T"));
+                let end = new Date(last.dateEtatTicket.replace(" ", "T"));
+                const ACTIVE_STATES = ["PEND-8IO36", "VALI-D83EF", "CREA-G73FF"];
+
+                if (ACTIVE_STATES.includes(last.state.refEtatTicket)) {
+                    end = new Date();
+                }
+
+
+                let diffMs = end - start;
+
+                let diffMin = Math.floor(diffMs / 60000);
+                let diffHours = Math.floor(diffMin / 60);
+                let remainingMin = diffMin % 60;
+
+                stateCell.innerText = `${last.state.libEtatTicket}`;
+                timeCell.innerText = ` (${diffHours}h ${remainingMin}min)`
+                let btnSee = generateBtn("voir", ["btn-primary"]);
+                btnSee.addEventListener("click", () => {
+                    let steps = computeSteps(ticketStates);
+                    document.components.stat_details.innerHTML = `${ticket.uuidTicket} créé le <b>${ticket.dateTicket}</b>`;
+                    document.components.infoTicket.innerHTML = `<span>Objet : ${ticket.objetTicket}</span> <p>${ticket.contentTicket}</p>`;
+                    document.components.infoTicket.innerHTML += `<span>Responable ${ticket.responsable}</span>`
+                    let list = document.createElement("ul");
+                    steps.forEach(s => {
+                        let li = document.createElement("li");
+                        li.innerText = `${s.from} → ${s.to} : ${s.duration}`;
+                        list.appendChild(li);
+                    })
+                    document.components.stat_details.appendChild(list);
+                    renderTimeline(states[i], "timeline");
+                })
+                actionCell = row.insertCell(5);
+                actionCell.appendChild(btnSee);
+            });
+
+
+        }, (err) => {
+            console.error(err);
+        });
+    }
+</script>

@@ -1,0 +1,160 @@
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Rechercher les tickets</h1>
+        </div>
+        <div class="col-12">
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label for="filter-date" class="form-label">Filtrer par date</label>
+                        <input type="date" class="form-control" id="filter-date_debut" placeholder="Date de début">
+                        <input type="date" class="form-control" id="filter-date_fin" placeholder="Date de fin">
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="mb-3">
+                        <label for="filter-service" class="form-label">Filtrer par service</label>
+                        <select class="form-control" id="filter-service">
+                            <option value="">Tous les services</option>
+                            <!-- Options de service -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="filter-priorite" class="form-label">Filtrer par priorité</label>
+                        <select class="form-control" id="filter-priorite">
+                            <option value="">Toutes les priorités</option>
+                            <option value="basse">Basse</option>
+                            <option value="normal">Moyenne</option>
+                            <option value="haute">Haute</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="mb-3">
+                        <h4>Filtrer selon les données</h4>
+                        <!--Filtrer selon les données -->
+                        <label for="data-name">Nom</label>
+                        <input type="text" class="form-control" id="data-name" placeholder="Nom">
+                        <label for="data-value">Valeur</label>
+                        <input type="text" class="form-control" id="data-value" placeholder="Valeur">
+                    </div>
+                </div>
+            </div>
+            <button id="filterTrigger" class="btn btn-primary">
+                Appliquer les filtres
+            </button>
+        </div>
+        <div class="col-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Reférence</th>
+                        <th>Objet</th>
+                        <th>Contenu</th>
+                        <th>Date</th>
+                        <th>Service Destination</th>
+                        <th>Priorité</th>
+                        <th>Dernier Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- les lignes vont être remplies ici -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    setMapper();
+    token = JSON.parse(localStorage.user).token;
+    document.components.filterTrigger.addEventListener("click", () => {
+        filterTickets(true);
+    });
+    getService(token, null, (services) => {
+        let select = document.getElementById("filter-service");
+        services.forEach(service => {
+            console.log(service);
+            let option = document.createElement("option");
+            option.value = service.uuidService;
+            option.textContent = service.nomService;
+            select.appendChild(option);
+        });
+    }, (err) => {
+        console.error(err);
+    });
+    function filterTickets(filter = false) {
+
+        let t = [];
+        getTickets(token, null, (tickets) => {
+            if (filter) {
+                t = tickets;
+                if (document.getElementById("data-name").value != "" && document.getElementById("data-value").value != "") {
+                    console.log("filtering by data", document.getElementById("data-name").value, document.getElementById("data-value").value);
+                    t = t.filter(ticket => {
+                        let dataticket = JSON.parse(ticket.dataticket);
+                        console.log("ticket data", dataticket);
+                        if (!dataticket) return false;
+                        return dataticket[document.getElementById("data-name").value] == document.getElementById("data-value").value;
+                    });
+                }
+                if (document.getElementById("filter-priorite").value != "") {
+                    console.log("filtering by priorite", document.getElementById("filter-priorite").value);
+                    t = t.filter(ticket => {
+                        console.log("ticket priorite", ticket.prioriteTicket);
+                        return ticket.prioriteTicket == document.getElementById("filter-priorite").value;
+                    });
+                }
+                if (document.getElementById("filter-date_debut").value && document.getElementById("filter-date_fin").value) {
+                    console.log("filtering by date", document.getElementById("filter-date_debut").value, document.getElementById("filter-date_fin").value);
+                    t = t.filter(ticket => {
+
+                        let date = new Date(ticket.dateTicket);
+                        let date_debut = new Date(document.getElementById("filter-date_debut").value);
+                        let date_fin = new Date(document.getElementById("filter-date_fin").value);
+                        return date >= date_debut && date <= date_fin;
+
+                    });
+                }
+                if (document.getElementById("filter-service").value != "") {
+                    console.log("filtering by service", document.getElementById("filter-service").value);
+                    t = t.filter(ticket => {
+                        console.log("ticket service", ticket.Service);
+                        return ticket.Service == document.getElementById("filter-service").value;
+                    });
+                }
+            } else {
+                t = tickets;
+            }
+            document.querySelector("table tbody").innerHTML = "";
+            t.forEach(ticket => {
+                let tr = document.createElement("tr");
+                let content = ticket.contentTicket;
+                if (content.length > 20) {
+                    content = content.substring(0, 20) + "...";
+                }
+                let state = ticket.states[ticket.states.length - 1];
+                tr.innerHTML = `
+                    <td>${ticket.uuidTicket}</td>
+                    <td>${ticket.objetTicket}</td>
+                    <td>${content}</td>
+                    <td>${ticket.dateTicket}</td>
+                    <td>${ticket.Service}</td>
+                    <td>${ticket.prioriteTicket}</td>
+                    <td>${state.EtatTicket}</td>
+                `;
+                document.querySelector("table tbody").appendChild(tr);
+            });
+        }, (err) => {
+            console.error(err);
+        });
+    }
+
+    getUser(JSON.parse(localStorage.user).user_id, token, (user_data) => {
+        c_user = user_data;
+        filterTickets();
+    }, (err) => {
+        console.error(err);
+    });
+</script>

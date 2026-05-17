@@ -1,0 +1,52 @@
+<div class="row">
+    <h2>Interface de developpeur</h2>
+    <div class="col-4">
+        <div class="info">
+            <button type="button" class="btn btn-primary position-relative">
+                Token
+                <span data-file="tokens" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    99+
+                    <span class="visually-hidden">unread messages</span>
+                </span>
+            </button>
+        </div>
+    </div>
+    <div class="col-6">
+
+
+        <div id="devConsole">
+            <div id="resultConsole"></div>
+            <textarea name="mainConsole" id="MainConsole"></textarea>
+            <button class="btn btn-primary" id="execConsole">Exécuter</button>
+        </div>
+    </div>
+</div>
+<script>
+    setMapper();
+    fetch("../include/tokens/tokens.json")
+        .then(result => { return result.json() })
+        .then(r => {
+            document.querySelector("[data-file=tokens]").innerText=Object.entries(r).length;
+        }).catch(err => {
+            console.error(err);
+        })
+    function consoleExecute() {
+        const query = document.getElementById("MainConsole").value;
+        let result = "";
+
+        if (query.startsWith("=")) {
+            try {
+                result = eval(query.substring(1));
+            } catch (e) {
+                result = "Erreur : " + e.message;
+            }
+        } else {
+            result = "not a valid query";
+        }
+
+        document.getElementById("resultConsole").innerText = result;
+    }
+    document.components.execConsole.addEventListener("click", function () {
+        consoleExecute();
+    });
+</script>

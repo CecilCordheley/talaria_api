@@ -4,6 +4,22 @@ request associateEntreprise{
     $idEntreprise=required_get("Entreprise");
     success(asyncService::associateEntreprise($idService,$idEntreprise));
 }
+request getServiceFromEntreprise{
+    $siret=required_get("siret");
+    success(asyncService::getServiceByEntreprise($siret));
+}
+request getUsers{
+     $idService=required_get("idService");
+    success(asyncService::getUsers($idService));
+}
+request getTicketTo{
+    $idService=required_get("idService");
+    success(asyncService::getTicketsTo($idService));
+}
+request del{
+    $id=required_get("idService");
+    success(asyncService::delService($id));
+}
 request getTicket{
     $idService=required_get("idService");
     success(asyncService::getTickets($idService));

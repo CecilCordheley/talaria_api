@@ -1,10 +1,42 @@
 import viewFnc;
+request account{
+    $v=viewFnc::callView("account");
+    success($v);
+}
+request KPI{
+    $v=viewFnc::callView("KPI");
+    success($v);
+}
+request statView{
+    $v=viewFnc::callView("statView");
+    success($v);
+}
+request searchTicket{
+    $v=viewFnc::callView("searchTicket");
+    success($v);
+}
+request logView{
+    $v=viewFnc::callView("logAccess");
+    success($v);
+}
+request newPassWord{
+    $v=viewFnc::callView("newPassWord");
+    success($v);
+}
 request agentActivity{
     $v=viewFnc::callView("agentActivity");
     success($v);
 }
+request devActivity{
+    $v=viewFnc::callView("devActivity");
+    success($v);
+}
 request managerActivity{
     $v=viewFnc::callView("managerActivity");
+    success($v);
+}
+request adminActivity{
+    $v=viewFnc::callView("adminActivity");
     success($v);
 }
 request getUsers{

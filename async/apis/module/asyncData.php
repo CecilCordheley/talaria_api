@@ -7,7 +7,7 @@ use SQLEntities\TypeticketEntity;
 use SQLEntities\TypeUserEntity;
 use SQLEntities\UserEntity;
 
-use Vendor\EasyFrameWork\Core\Master\MiddleAgent;
+use Vendor\EasyFrameWork\Core\Master\MiddleAgentV2;
 use vendor\easyFrameWork\Core\Master\SQLFactory;
 
 
@@ -19,8 +19,8 @@ abstract class AsyncData {
     public static function getStateTicket(){
         try{
             $sqlF=self::getSQLFactory();
-             $userData = MiddleAgent::checkTokenAndRole(["admin","manager","agent","dev"]);
-        $user_required=UserEntity::getUserBy(self::getSQLFactory(),"uuidUser",$userData["user"]);
+             $userData = MiddleAgentV2::checkRole(["admin","manager","agent","dev"]);
+        $user_required = UserEntity::getUserBy(self::getSQLFactory(), "uuidUser", $userData["user_id"]);
          if($user_required==false){
             echo json_encode(["result"=>"error","message"=>"no User Finded"]);
             exit();
@@ -43,8 +43,8 @@ abstract class AsyncData {
     public static function getTypeTicket(){
         try{
         $sqlF=self::getSQLFactory();
-        $userData = MiddleAgent::checkTokenAndRole(["admin","manager","agent","dev"]);
-        $user_required=UserEntity::getUserBy(self::getSQLFactory(),"uuidUser",$userData["user"]);
+        $userData = MiddleAgentV2::checkRole(["admin","manager","agent","dev"]);
+        $user_required=UserEntity::getUserBy(self::getSQLFactory(),"uuidUser",$userData["user_id"]);
          if($user_required==false){
             echo json_encode(["result"=>"error","message"=>"no User Finded"]);
             exit();
@@ -67,7 +67,7 @@ abstract class AsyncData {
     public static function getTypeUser(){
         try{
         $sqlF=self::getSQLFactory();
-        $userData = MiddleAgent::checkTokenAndRole(["admin","manager"]);
+        $userData = MiddleAgentV2::checkRole(["admin","manager"]);
         $user_required=UserEntity::getUserBy(self::getSQLFactory(),"uuidUser",$userData["user"]);
          if($user_required==false){
             echo json_encode(["result"=>"error","message"=>"no User Finded"]);

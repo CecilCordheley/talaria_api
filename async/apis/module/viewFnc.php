@@ -23,22 +23,4 @@ abstract class ViewFnc{
         }
         return file_get_contents("./views/$view.view");
     }
-    public static function getPannesArray(){
-         if(!file_exists("./views/pannesArray.view")){
-           return ["status"=>"error","message"=>"File doesn't esist"];
-        }
-        return file_get_contents("./views/pannesArray.view");
-    }
-    public static function newUser(){
-         if(!file_exists("./views/newUser.view")){
-           return ["status"=>"error","message"=>"File doesn't esist"];
-        }
-        return file_get_contents("./views/newUser.view");
-    }
-    public static function getUsers(){
-        if(!file_exists("./views/seeUser.view")){
-           return ["status"=>"error","File doesn't esist"];
-        }
-        return file_get_contents("./views/seeUser.view");
-    }
 }

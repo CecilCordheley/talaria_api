@@ -6,11 +6,19 @@ request get{
 request create{
     success(asyncEntreprise::addEntreprise());
 }
+request del{
+    $siret=required_get("siret");
+    success(asyncEntreprise::delEntreprise($siret));
+}
 request setData{
     $siret=required_get("siret");
     $key=required_get("key");
     $value=required_get("value");
     success(asyncEntreprise::setData($siret,$key,$value));
+}
+request getUsers{
+    $id=required_get("id");
+    success(asyncEntreprise::getUsers($id));
 }
 request update{
     $id=required_get("siret");

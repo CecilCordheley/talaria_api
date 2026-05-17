@@ -3,10 +3,22 @@ request getUser{
     $id=$_GET["id"]??null;
     success(asyncUser::getUser($id));
 }
+request del{
+    $idUser=required_get("idUser");
+    success(asyncUser::delUser($idUser));
+}
+request changePassWord{
+    $user=required_get("idUser");
+    $newPassWord=required_get("newPassWord");
+    success(asyncUser::updatePassWord($user,$newPassWord));
+}
 request associateService{
     $user=required_get("idUser");
     $service=required_get("idService");
     success(asyncUser::associateService($user,$service));
+}
+request checkToken{
+    success(asyncUser::checkValidToken());
 }
 request updateUser{
     $id=required_get("idUser");

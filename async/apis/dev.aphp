@@ -1,0 +1,8 @@
+import asyncDev;
+request getStat{
+    success(asyncDev::getStat());
+}
+request cleanLog{
+    $f=required_get("file");
+    success(asyncDev::cleanLog($f));
+}

@@ -1,117 +1,178 @@
 <div class="container">
   <div class="row">
-    <div class="col-12">
-      <caption>Ticket du Service</caption>
-      <table id="listTicket" class="table">
-        <tr>
-          <th>ID</th>
-          <th>Date</th>
-          <th>Agent</th>
-          <th>Destinataire</th>
-          <th>Etat</th>
-        </tr>
-      </table>
-    </div>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTicket">
-  Nouveau Ticket
-</button>
-
-    </div>
-<div class="modal fade" id="ServiceTicketMdl" tabindex="-1" aria-labelledby="ServiceTicketMdl" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="ServiceTicketMdl">Tickets du service</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" target-section="TicketFrom" href="#">Ticket du Service</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" target-section="ticketAgent" href="#">Ticket attribué</a>
+      </li>
+    </ul>
+    <section id="TicketFrom">
+      <div class="col-12">
+        <caption>Ticket du Service</caption>
         <table class="table">
           <thead>
             <tr>
-              <th>Reférence</th>
-              <th>Objet</th>
+              <th>ID</th>
               <th>Date</th>
-              <th>Service Destination</th>
-              <th>Priorité</th>
-              <th></th>
+              <th>Agent</th>
+              <th>Destinataire</th>
+              <th>Etat</th>
             </tr>
           </thead>
-          <tbody>
-            {LOOP:serviceTicketFrom}
-            <tr>
-              <td>{#RefTicket#}</td>
-              <td>{#objetTicket#}</td>
-              <td>{#dateTicket#}</td>
-              <td>{#serviceTicket#}</td>
-              <td>{#prioriteTicket#}</td>
-              <td>{#lastStatut#}</td>
-              <td>
-                <a data-bs-toggle="modal" data-bs-target="#manageTicket" name="manageTicket" idTicket="{#idTicket#}"
-                  class="btn btn-primary" href="#">voir</a>
-                {:IF {#agentResponsable#}={var:user.idAgent}}
-                <a data-bs-toggle="modal" data-bs-target="#manageTicket" name="handleTicket" idTicket="{#idTicket#}"
-                  class="btn btn-primary" href="#">Gérer</a>
-                {:/IF}
-              </td>
-            </tr>
-            {/LOOP}
-          </tbody>
+          <tbody id="listTicket"></tbody>
         </table>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" id="addService" class="btn btn-primary" data-bs-dismiss="modal">Valider</button>
+    </section>
+    <section id="ticketAgent">
+      <div class="col-12">
+        <caption>Mes Tickets</caption>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Service d'origine</th>
+              <th>Objet</th>
+              <th>Priorité</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ticketAgent_tbl"></tbody>
+        </table>
+      </div>
+    </section>
+    <button id="newTicketBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTicket">
+      Nouveau Ticket
+    </button>
+
+  </div>
+  <div class="modal fade" id="ServiceTicketMdl" tabindex="-1" aria-labelledby="ServiceTicketMdl" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="ServiceTicketMdl">Tickets du service</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Reférence</th>
+                <th>Objet</th>
+                <th>Date</th>
+                <th>Service Destination</th>
+                <th>Priorité</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {LOOP:serviceTicketFrom}
+              <tr>
+                <td>{#RefTicket#}</td>
+                <td>{#objetTicket#}</td>
+                <td>{#dateTicket#}</td>
+                <td>{#serviceTicket#}</td>
+                <td>{#prioriteTicket#}</td>
+                <td>{#lastStatut#}</td>
+                <td>
+                  <a data-bs-toggle="modal" data-bs-target="#manageTicket" name="manageTicket" idTicket="{#idTicket#}"
+                    class="btn btn-primary" href="#">voir</a>
+                  {:IF {#agentResponsable#}={var:user.idAgent}}
+                  <a data-bs-toggle="modal" data-bs-target="#manageTicket" name="handleTicket" idTicket="{#idTicket#}"
+                    class="btn btn-primary" href="#">Gérer</a>
+                  {:/IF}
+                </td>
+              </tr>
+              {/LOOP}
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="addService" class="btn btn-primary" data-bs-dismiss="modal">Valider</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 </div>
 <div class="modal fade" id="manageTicket" tabindex="-1" aria-labelledby="manageTicket" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
 
-        <h1 class="modal-title fs-5" id="manageTicket">Gérer le ticket #<span manage-ticket="idTicket"></span></h1>
+        <h1 class="modal-title fs-5">Gérer le ticket #<span manage-ticket="uuidTicket"></span></h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <span>date</span>
-          <span manage-ticket="dateTicket"></span>
-        </div>
-        <div class="mb-3">
-          <span>Objet</span>
-          <span manage-ticket="objetTicket"></span>
-        </div>
-        <div class="mb-3">
-          <span>Contenu : </span>
-          <span manage-ticket="contentTicket"></span>
-        </div>
-        <div class="mb-3">
-          <h4>Données</h4>
-          <ul manage-ticket="dataTicket">
-          </ul>
-        </div>
-        <div class="mb-3">
-          <h4>Etat du tickets</h4>
-          <ul manage-ticket="states">
+      <div class="modal-body row">
+        <div class="col-6">
+          <div class="mb-3">
+            <span>date</span>
+            <input disabled class="form-control" type="text" manage-ticket="dateTicket">
+          </div>
+          <div class="mb-3">
+            <label for="updateTypeTicket">Catégorie</label>
+            <select manage-ticket="TypeTicket" class="form-control" name="typeTicket" id="updateTypeTicket">
+              <option value="NULL">Choisissez un type de ticket</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="updateServiceTicket">Service</label>
+            <select manage-ticket="Service" class="form-control" name="service" id="updateServiceTicket">
+              <option value="NULL">Choisissez un service</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <h4>Données</h4>
+            <ul manage-ticket="dataTicket" id="dataTicket_update">
+            </ul>
+            <div class="input-group">
+              <input type="text" id="data-name-update" aria-label="Nom" placeholder="Nom" class="form-control">
+              <input type="text" id="data-value-update" aria-label="value" placeholder="valeur" class="form-control">
+              <button class="btn btn-outline-secondary" id="addDataUpdateTicket" type="button">ajouter</button>
+            </div>
+          </div>
 
+        </div>
+        <div class="col-6">
+          <div class="mb-3">
+            <span>Objet</span>
+            <input class="form-control" id="updateObjetTicket" manage-ticket="objetTicket">
+          </div>
+          <div class="mb-3">
+            <span>Contenu : </span>
+            <textarea class="form-control" id="updateContentTicket" manage-ticket="contentTicket"></textarea>
+          </div>
+          <div class="changeStat">
+            <h4>Appliquer le traitement</h4>
+
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="finalStatut" value="PROC-F356T" id="Proceed">
+              <label class="form-check-label" for="Proceed">
+                Traité
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="finalStatut" value="REJE-K1E32" id="Reject">
+              <label class="form-check-label" for="Reject">
+                Rejeté
+              </label>
+            </div>
+            <textarea class="form-control" id="lastComment"></textarea>
+            <button id="finalState" class="btn btn-primary">Fin</button>
+          </div>
+        </div>
+        <div class="mb-3">
+          <h4>Etats du ticket</h4>
+          <ul class="data-list" manage-ticket="statusTicket" id="statusTicket_update">
           </ul>
         </div>
-        <div class="mb-3" id="lastStateCompoment">
-          <label class="form-label" for="StateTicket">Etat final :</label>
-          <select class="form-control" name="lastState" id="StateTicket">
-            <option value="NULL">Choisissez un état</option>
-            <option value="4">Traité</option>
-            <option value="5">Echoué</option>
-          </select>
-          <textarea class="form-control" name="commentFail" id="commentFail"></textarea>
+        <div class="modal-footer">
+          <button type="button" id="updateTicket" class="btn btn-primary" data-bs-dismiss="modal">Valider</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" id="validState" class="btn btn-primary" data-bs-dismiss="modal">Valider</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -131,8 +192,8 @@
               placeholder="objet du ticket">
           </div>
           <div class="mb-3">
-            <label for="Service" class="form-label">Service</label>
-            <select class="form-control" name="service" id="Service">
+            <label for="NewTicket_Service" class="form-label">Service</label>
+            <select class="form-control" name="service" id="NewTicket_Service">
               <option value="NULL">Choisissez un service</option>
             </select>
           </div>
@@ -168,44 +229,254 @@
   </div>
 </div>
 <script>
-    setMapper();
-    /*Récupérer les ticket du service*/
-    getUser(JSON.parse(localStorage.getItem("user")).user_id,JSON.parse(localStorage.getItem("user")).token,(data)=>{
-      GetTicketFrom(JSON.parse(localStorage.getItem("user")).token,data.service_idService,(data)=>{
-        data.forEach(ticket => {
-          var row = document.components["listTicket"].insertRow(1);
-          var cellID = row.insertCell(0);
-          cellID.innerHTML=ticket.ticket.uuidTicket;
-          var cellDate = row.insertCell(1);
-          cellDate.innerHTML=ticket.ticket.dateTicket;
-          var cellUser = row.insertCell(2);
-          cellUser.innerHTML=ticket.ticket["Auteur"];
-          var cellDest = row.insertCell(3);
-          cellDest.innerHTML=ticket.ticket["service"];
-           var cellStateDate = row.insertCell(4);
-          cellStateDate.innerHTML=ticket.state["libEtatTicket"];
-        });
-      },(err)=>{
-        console.error(err);
-      })
-    },(err)=>{  
+  setMapper();
+  token = JSON.parse(localStorage.user).token;
+  loadUser(c_user,mainService);
+
+  document.components.newTicketBtn.addEventListener("click", function () {
+    getService(token, null, (s) => {
+      fillSelect(document.components.NewTicket_Service, s, { value: "uuidService", "name": "nomService" }, "Séléctionner un Service");
+    });
+    getTypeTicket(token, (t) => {
+      fillSelect(document.components.TypeTicket, t, { value: "refTypeTicket", "name": "libTypeTicket" }, "Séléctionner une catégorie");
+    }, (err) => {
       console.error(err);
     })
-    document.getElementById("addTicket").addEventListener("click",function(){
-        let _data=JSON.parse(localStorage.getItem("user"));
-                let _token=_data.token;
-        let paramTicket={
-            "content":document.components.contentNewTicket.value,
-            "object":document.components["objetNewTicket"].value,
-            "priority":"normal",
-            "data":[],
-            "service":document.components["Service"].value,
-            "type":document.components["TypeTicket"].value
-        }
-        createTicket(_token,paramTicket,(data)=>{
-            alert(`Ticket créer sous l'identifiant : ${data}`)
-        },(err)=>{
-            console.error(err);
-        })
+  });
+  function resetTab() {
+    document.querySelectorAll("section").forEach(el => { el.style.display = "none" });
+    document.querySelectorAll("[target-section]").forEach(el => { el.classList.remove("active") });
+  }
+  resetTab();
+  const displayTicketRow = function (t, ticket, fields) {
+    var row = document.createElement('tr');
+    fields.forEach(data => {
+      let cell = document.createElement("td");
+      cell.innerText = ticket[data];
+      row.appendChild(cell);
     })
+    t.appendChild(row);
+
+    return row;
+  }
+  setupAddDataButton(
+    document.components.addDataUpdateTicket,
+    document.components["data-name-update"],
+    document.components["data-value-update"],
+    document.components.dataTicket_update
+  );
+  setupAddDataButton(
+    document.components.addDataNewTicket,
+    document.components["data-name"],
+    document.components["data-value"],
+    document.components.dataTicket
+  );
+  document.querySelectorAll("[target-section]").forEach(el => {
+    el.addEventListener("click", function () {
+
+      resetTab()
+      let t = this.getAttribute("target-section");
+      this.classList.add("active");
+      switch (t) {
+        case "TicketFrom":
+          if (c_user != null)
+            getTicketFrom(token, c_user.service_idService, (data) => {
+              document.components["listTicket"].innerHTML = "<tr></tr>";
+              data.forEach(ticket => {
+                var row = document.components["listTicket"].insertRow(1);
+                var cellID = row.insertCell(0);
+                cellID.innerHTML = ticket.ticket.uuidTicket;
+                let content = ticket.ticket.contentTicket.length > 20 ? ticket.ticket.contentTicket.substring(0, 20) + "..." : ticket.ticket.contentTicket;
+                cellID.setAttribute("title", ticket.ticket.objetTicket + " : " + content);
+                var cellDate = row.insertCell(1);
+                cellDate.innerHTML = ticket.ticket.dateTicket;
+                var cellUser = row.insertCell(2);
+                cellUser.innerHTML = ticket.ticket["Auteur"];
+                getUser(ticket.ticket["Auteur"], token, (data) => {
+                  cellUser.setAttribute("title", `${data.prenomUser} ${data.nomUser} `);
+                }, (err) => {
+                  console.error(err);
+                })
+                var cellDest = row.insertCell(3);
+                cellDest.innerHTML = ticket.ticket["service"];
+                getService(token, ticket.ticket["service"], (data) => {
+                  cellDest.setAttribute("title", `${data.nomService} `);
+                }, (err) => {
+                  console.error(err);
+                })
+                var cellStateDate = row.insertCell(4);
+                cellStateDate.innerHTML = ticket.state["libEtatTicket"];
+
+                var cellSeeTicket = row.insertCell(5);
+                let btnSee = document.createElement("button");
+                btnSee.classList.add("btn");
+                btnSee.classList.add("btn-primary");
+                btnSee.setAttribute("data-bs-toggle", "modal");
+                btnSee.setAttribute("data-bs-target", "#manageTicket");
+                btnSee.innerText = "Voir le ticket";
+                btnSee.addEventListener("click", () => {
+                  document.components.updateTicket.disabled = false;
+                  document.querySelector(".changeStat").style.display = "none"
+                  displayModalTicket(ticket.ticket, "see", {
+                    service: "updateServiceTicket",
+                    categorie: "updateTypeTicket",
+                    data: "dataTicket_update",
+                    states:"statusTicket_update"
+                  });
+                  /* getTicket(token, ticket.ticket.uuidTicket, (data) => {
+                     document.components.updateTicket.disabled=false;
+                     const myModal = new bootstrap.Modal('#manageTicket');
+                     myModal.show();
+                     if (ticket.ticket.Auteur != c_user.uuidUser && ticket.state.refEtatTicket != "Created")
+                       document.components.updateTicket.style.display = "none";
+                     else
+                       document.components.updateTicket.style.display = "block";
+                     document.querySelector("[manage-ticket=idTicket]").innerText = data[0].uuidTicket
+                     //refill services select
+                     getService(token, null, (services) => {
+                       let selectService = document.querySelector("#updateServiceTicket");
+                       selectService.innerHTML = `<option value="NULL">Choisissez un service</option>`;
+                       services.forEach(el => {
+                         selectService.innerHTML += `<option value=${el.uuidService} ${data[0].service_idService == el.uuidService ? "selected" : ""}>${el.nomService}</option>`;
+                       });
+                     }, (err) => {
+                       console.error(err);
+                     })
+                     //refill type ticket select
+                     getTypeTicket(token, (types) => {
+                       console.log(types);
+                       let selectType = document.querySelector("#updateTypeTicket");
+                       selectType.innerHTML = `<option value="NULL">Choisissez un type de ticket</option>`;
+                       types.forEach(el => {
+                         selectType.innerHTML += `<option value=${el.refTypeTicket} ${data[0].TypeTicket == el.refTypeTicket ? "selected" : ""}>${el.libTypeTicket}</option>`;
+                       });
+                     }, (err) => {
+                       console.error(err);
+                     });
+                     const libState = ["Created", "Pending", "Assigned", "Resolved", "Closed"];
+                     data[0].states.forEach(state => {
+                       let statEl = document.createElement("li");
+                       statEl.innerHTML = `<span>${libState[state.EtatTicket - 1]}</span><span>${state.dateEtatTicket}</span><span>${state.comment}</span>`;
+                       document.querySelector("#statusTicket_update").appendChild(statEl);
+                     });
+                     setTicket(document.components.manageTicket, data)
+ 
+                   }, (err) => {
+                     console.log(err);
+                   })*/
+                });
+                cellSeeTicket.appendChild(btnSee);
+
+              });
+            }, (err) => {
+              console.error(err);
+            })
+          else {
+            alert("impossible de charger les tickets du service");
+          }
+          break;
+        case "ticketAgent":
+          // document.components["ticketAgent_tbl"].parent.style.display = "block";
+          //Afficher les ticket assignés à l'agent
+          filterTicket(token, { "responsable": c_user.idUser }, (data) => {
+            let tbody = document.components["ticketAgent_tbl"];
+            tbody.innerHTML = "";
+            data.forEach(ticket => {
+              let row = displayTicketRow(tbody, ticket, ["uuidTicket", "dateTicket", "Service", "objetTicket"]);
+              let prio = row.insertCell(4);
+              prio.innerText = ticket.prioriteTicket;
+              var cellSeeTicket = row.insertCell(5);
+              let btnSee = generateBtn("Voir le ticket", ["btn-primary"]);
+              btnSee.setAttribute("data-bs-toggle", "modal");
+              btnSee.setAttribute("data-bs-target", "#manageTicket");
+              btnSee.addEventListener("click", function () {
+                document.querySelector(".changeStat").style.display = "block"
+                displayModalTicket(ticket, "see", {
+                  service: "updateServiceTicket",
+                  categorie: "updateTypeTicket",
+                  data: "dataTicket_update"
+                });
+                document.components.updateTicket.disabled = true;
+
+              });
+              cellSeeTicket.appendChild(btnSee);
+            })
+          }, (err) => {
+            console.error(err);
+          })
+          break;
+      }
+      document.components[t].style.display = "block";
+      return false;
+    })
+  })
+
+
+  document.components.updateTicket.addEventListener("click", function () {
+    const datas = {};
+
+    document.querySelectorAll("#dataTicket_update li").forEach(li => {
+      const spans = li.querySelectorAll("span");
+      if (spans.length >= 2) {
+        const key = spans[0].textContent.trim();
+        const value = spans[1].textContent.trim();
+        datas[key] = value;
+      }
+    });
+    let id = document.querySelector("[manage-ticket=idTicket]").innerText;
+    alert(`le ticket ${id} est sur le point d'être modifié`);
+    debugger;
+    updateTicket(token, id, {
+      "content": document.components.updateContentTicket.value,
+      "objet": document.components.updateObjetTicket.value,
+      "service": document.components.updateServiceTicket.value,
+      "type": document.components.updateTypeTicket.value,
+      "data": datas
+    }, (data) => {
+      alert(`le ticket ${id} a été modifié`);
+    }, (err) => {
+      console.error(err);
+    })
+  })
+  document.components.finalState.addEventListener("click", function () {
+    let idTicket = document.querySelector("[manage-ticket=uuidTicket]").innerText;
+    let comment = document.components.lastComment.value;
+    let state = document.querySelector("[name=finalStatut]:checked").value;
+    changeStatut(token, idTicket, state, comment, (data) => {
+      let traitment = state === "PROC-F356T" ? "traité" : "rejeté";
+      const myModalAlternative = new bootstrap.Modal('#manageTicket', {
+
+      })
+      myModalAlternative.hide();
+      _alert(`le ticket ${idTicket} a bien été ${traitment}`, () => {
+
+      });
+    }, (err) => {
+      console.error(err);
+      document.console.innerText += "Valide tiket\n" + err;
+    })
+  });
+  document.getElementById("addTicket").addEventListener("click", function () {
+    let _data = JSON.parse(localStorage.getItem("user"));
+    let _token = _data.token;
+    let datas = {};
+    document.querySelectorAll("#dataTicket li").forEach(element => {
+      //  console.log(element.querySelectorAll("span")[0].innerText, element.querySelectorAll("span")[1].innerText)
+      datas[element.querySelectorAll("span")[0].innerText] = element.querySelectorAll("span")[1].innerText;
+    });
+
+    let paramTicket = {
+      "content": document.components.contentNewTicket.value,
+      "object": document.components["objetNewTicket"].value,
+      "priority": "normal",
+      "data": datas,
+      "service": document.components["NewTicket_Service"].value,
+      "type": document.components["TypeTicket"].value
+    }
+    createTicket(_token, paramTicket, (data) => {
+      alert(`Ticket créer sous l'identifiant : ${data}`)
+    }, (err) => {
+      console.error(err);
+    })
+  })
 </script>
